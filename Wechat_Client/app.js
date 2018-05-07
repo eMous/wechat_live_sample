@@ -1,7 +1,9 @@
 //app.js
 var util = require("utils/util")
-App({
+var socketMatters = require("utils/socketMatters.js")
 
+App({
+  wsTaskFailed : false,
   onLaunch: function () {
 
     // 建立服务器长连接
@@ -9,37 +11,40 @@ App({
       // connect出错的话 会抛出异常使得,wsTask无法被获取,文档里没有写。
       // 并且，如果是无法解析DNS，但是域名结构正确 如 wss://example.qq.com这个网站一样会返回true。但实际上是fail的。
       var url = "wss://127.0.0.1:7272"
+      var that = this
       this.wsTask = wx.connectSocket({
         url: url,
         success: function () {
+          that.wsTaskFailed = false;
           util.logMessage("Websocket to " + url + " is success Connected!")
+          console.log("Websocket to " + url + " is success Connected!")
+          
         },
         fail: function () {
+          that.wsTaskFailed = true;
           util.logMessage("Websocket to " + url + " is fail Connected!", true)
+          console.log("Websocket to " + url + " is fail Connected!")
+          socketMatters.reconnectWsTask(url);
         },
       })
 
-      this.wsTask.onError(function (mess) {
+      that.wsTask.onError(function (mess) {
         util.logMessage("onwsTask.onError:" + mess, true)
+        console.log("onwsTask.onError:" + mess, true)
+        that.wsTaskFailed = true;
+        socketMatters.reconnectWsTask(url);
       })
       wx.onSocketError(function (mess) {
+        // 这个函数先放着不用，先用上面的具体Task的
         util.logMessage("onwx.onSocketError:" + mess, true)
       });
 
-      this.wsTask.onOpen(function (header) {
+      that.wsTask.onOpen(function (header) {
+        that.wsTaskFailed = false;
         util.logMessage("wsTask.Open")
       })
-      var wsTask = this.wsTask
-      this.wsTask.onMessage(function(msg){
-        console.log(msg)
-        console.log(JSON.parse(msg.data))
-
-        wsTask.send({ data:"123"})
-        var mCmd = { 1: "connect.getWlList", "data": { "mdd": "370600" } }
-        wsTask.send( {data: JSON.stringify(mCmd)})
-
-        console.log(JSON.stringify(mCmd))
-
+      that.wsTask.onMessage(function(msg){
+        socketMatters.onMessage(msg)
       })
 
     } catch (err) {
