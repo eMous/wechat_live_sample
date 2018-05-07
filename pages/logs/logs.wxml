@@ -1,0 +1,10 @@
+<!--logs.wxml-->
+<view class="container log-list">
+  <block wx:for="{{logs}}" wx:for-item="log" wx:key="*this">
+    <text class="log-item" style="color:{{isWarning[index] ? 'red' : 'black'}};">{{index + 1}}. {{log}}</text>
+  </block>
+</view>
+<!--悬浮菜单-->
+<view class="menu">
+    <text class="iconfont icon-svg35" catchtap='tapClear'></text>
+</view>
