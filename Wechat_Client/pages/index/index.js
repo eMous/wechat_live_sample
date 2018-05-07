@@ -100,7 +100,8 @@ Page({
         time: "2016-12-12"
       }
     ],
-    controls: true//是否显示播放控件
+    controls: true,//是否显示播放控件
+    hiddenmodalput: true
   },
   onLoad: function (options) {
 
@@ -151,5 +152,18 @@ Page({
 
   tapLog: function(){
     wx.navigateTo({url:'../logs/logs'});
+  },
+
+  tapFollow: function () {
+    this.setData({ hiddenmodalput:false});
+  },
+  ignore: function(){},
+
+  // 模态框点击了取消
+  cancelSearchLiveRoom: function(){
+    this.setData({ hiddenmodalput: true });
+  },
+  confirmSearchRoom: function(){
+    
   }
 })
