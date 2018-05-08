@@ -57,11 +57,15 @@ function onMessage(msg) {
     switch (parseInt(data["commandNum"])) {
         case Command.S_Busniess_Reconnect_Info:
             onConnectDetailInfo(detailData)
-            break;
+            break
         case Command.S_Detail_Room_Info:
             onRoomDetailInfo(detailData)
             console.log("room  === " + JSON.stringify(detailData))
-            
+            break
+        case Command.S_Detail_Room_Info_And_Flush:
+            onRoomDetailInfoAndFlush(detailData)
+            console.log("room and Flush === " + JSON.stringify(detailData))
+            break
     }
 
     // console.log(msg)
@@ -97,7 +101,11 @@ function send(msgSend) {
         }
     })
 }
-
+// -------- 包发送入口 --------
+function addRoom(roomId) {
+    var retCommand = util.commandBuild(com.Command.C_Add_Room, { roomId: roomId })
+    send(retCommand)
+}
 // -------- 具体数据包处理函数 -------- 
 function onConnectDetailInfo(data) {
     var roomIds = data["roomIds"] || []
@@ -113,8 +121,36 @@ function onRoomDetailInfo(data){
     console.log("ssssssssss" + dat.dataInstance.roomDetailInfo)
     dat.dataInstance.roomDetailInfo.push(data.detailInfo);
 }
+function onRoomDetailInfoAndFlush(data) {
+    if(data.success == true){
+        console.log("ssssssssss" + dat.dataInstance.roomDetailInfo)
+        dat.dataInstance.roomDetailInfo.push(data.detailInfo);
+        // Most Beautiful Hack.
+        currentPage: getCurrentPages()[0].setData({ lists: dat.dataInstance.roomDetailInfo}) 
+        wx.showToast({
+            title: "添加成功",
+            icon: "success",
+            duration: 1000
+        })
+        // wx.reLaunch({url:"index"})
+    } else if (data.success == 0){
+        wx.showToast({
+            title:"房间号不存在",
+            icon:"none",
+            duration:2000
+        })
+    } else if (data.success == -1){
+        wx.showToast({
+            title: "您已关注该直播间",
+            icon: "none",
+            duration: 2000
+        })
+    }
+
+}
 module.exports = {
     onMessage: onMessage,
     reconnectWsTask: reconnectWsTask,
-    businessReconnect: businessReconnect
+    businessReconnect: businessReconnect,
+    addRoom: addRoom
 }

@@ -29,8 +29,28 @@ const Command = {
     time:"刚刚"}
     */
     S_Detail_Room_Info: -2,
-    
-    
+    /*
+    *   客户端请求关注某直播间
+    *   DATA:{roomId:..}
+    */
+    C_Add_Room: 3,
+    /*
+    *   具体直播间信息，且刷新客户端列表
+    *   DATA：{success:true ,data:{roomId : 1,
+    imgUrl:"...",
+    title:"sss",
+    info:"...",
+    avatar:"sss",
+    uName:"2ss",
+    isLive:true,
+    videoUrl:"sdasdas",
+    browse:123,
+    like:123,
+    comment:123,
+    time:"刚刚"}
+    }
+    */
+    S_Detail_Room_Info_And_Flush: -3,
 }
 
 
