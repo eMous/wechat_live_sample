@@ -35,8 +35,10 @@ function reconnectWsTask(url) {
 
             app.wsTask.onOpen(function (header) {
                 app.wsTaskFailed = false;
+                app.lastPingPongTime = Date.parse(new Date()) + 15000
                 util.logMessage("wsTask.Open")
                 businessReconnect()
+                startPingPong()
             })
             app.wsTask.onMessage(function (msg) {
                 onMessage(msg)
@@ -45,11 +47,49 @@ function reconnectWsTask(url) {
         }, 500)
     }
 }
+// 心跳包设置
+function startPingPong() {
+    setInterval(function () {
+        let app = getApp()
+        if (!app.wsTaskFailed) {
+            console.log("任务没有失败！")
+            if (app.lastPingPongTime != null) {
+                var now_time = Date.parse(new Date())
+                if (now_time - app.lastPingPongTime > 15000) {
+                    console.log("现在的时间是" + now_time)
+                    console.log("上次pingpong的时间是" + app.lastPingPongTime)
+
+                    app.wsTask.close({
+                        success: function () {
+                            console.log("socket 因为心跳包的原因成功close! ")
+                            util.logMessage("socket 因为心跳包的原因成功close! ", true),
+                            app.wsTaskFailed = true
+                            reconnectWsTask(app.url)
+                        },
+                        fail: function () {
+                            console.log("socket 因为心跳包的原因失败close! ")
+                            util.logMessage("socket 因为心跳包的原因失败close! ", true)
+                            app.wsTaskFailed = true
+                            reconnectWsTask(app.url)
+                        },
+                    })
+                }
+            }
+        }
+    }, 4000)
+}
 
 function onMessage(msg) {
     var app = getApp()
     var data = JSON.parse(msg.data)
 
+    if (data.hasOwnProperty("type")) {
+        if (data["type"] == "ping") {
+            console.log("send ping-pong ..")
+            send(0, "pong")
+            app.lastPingPongTime = Date.parse(new Date())
+        }
+    }
     // 因为可能还有PingPong，要一些逻辑处理暂时不写
     // console.assert(data["commandNum"],"服务端发送的消息")
     const Command = com.Command
@@ -117,29 +157,29 @@ function onConnectDetailInfo(data) {
         send(retCommand)
     })
 }
-function onRoomDetailInfo(data){
+function onRoomDetailInfo(data) {
     console.log("ssssssssss" + dat.dataInstance.roomDetailInfo)
     dat.dataInstance.roomDetailInfo.push(data.detailInfo);
 }
 function onRoomDetailInfoAndFlush(data) {
-    if(data.success == true){
+    if (data.success == true) {
         console.log("ssssssssss" + dat.dataInstance.roomDetailInfo)
         dat.dataInstance.roomDetailInfo.push(data.detailInfo);
         // Most Beautiful Hack.
-        currentPage: getCurrentPages()[0].setData({ lists: dat.dataInstance.roomDetailInfo}) 
+        currentPage: getCurrentPages()[0].setData({ lists: dat.dataInstance.roomDetailInfo })
         wx.showToast({
             title: "添加成功",
             icon: "success",
             duration: 1000
         })
         // wx.reLaunch({url:"index"})
-    } else if (data.success == 0){
+    } else if (data.success == 0) {
         wx.showToast({
-            title:"房间号不存在",
-            icon:"none",
-            duration:2000
+            title: "房间号不存在",
+            icon: "none",
+            duration: 2000
         })
-    } else if (data.success == -1){
+    } else if (data.success == -1) {
         wx.showToast({
             title: "您已关注该直播间",
             icon: "none",
@@ -152,5 +192,6 @@ module.exports = {
     onMessage: onMessage,
     reconnectWsTask: reconnectWsTask,
     businessReconnect: businessReconnect,
-    addRoom: addRoom
+    addRoom: addRoom,
+    startPingPong: startPingPong
 }
