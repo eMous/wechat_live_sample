@@ -40,9 +40,22 @@ function logMessage(str,bIsWarning = false) {
   wx.setStorageSync('isWarning', isWarning);
 }
 
+function commandBuild(commandNum,data){
+  // var stringDetailCommand = JSON.stringify(data)
+  // var jsonDetailCommand = JSON.parse(stringDetailCommand)
+  var jsonDetailCommand = {"commandNum" : 1, "data": 1};
+  jsonDetailCommand["commandNum"] = commandNum
+  jsonDetailCommand["data"] = data
+  
+  var ret = JSON.stringify(jsonDetailCommand)
+  
+  return ret
+}
+
 module.exports = {
   formatTime: formatTime,
   formatDate: formatDate,
   ossAliyuncs: ossAliyuncs,
-  logMessage: logMessage
+  logMessage: logMessage,
+  commandBuild: commandBuild
 }

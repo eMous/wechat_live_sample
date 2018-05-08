@@ -1,6 +1,6 @@
 <!--index.wxml-->
 <view class="container">
-    <view class="items">
+    <view wx:if="{{lists.length > 0}}" class="items">
         <view class="item" wx:for="{{lists}}" bindtap="detail" wx:for-item="v" wx:key="its" data-id="{{index}}" data-title="{{v.title}}">
             <view class="i-top">
                 <image class="i-img"  src="{{v.imgUrl}}">
@@ -26,14 +26,29 @@
                         <text class="iconfont icon-pinglun1 r-icon-comment"> {{v.comment}}</text>
                     </view>
                 </view>
-            </view>
+            </view> 
         </view>
     </view>
-    <view class="weui-loadmore weui-loadmore_line weui-bg-transparent">
-        <view class="weui-loadmore__tips weui-loadmore__tips_in-line">我是有底线的</view>
-    </view>
-    <!--悬浮菜单-->
+    <view wx:else class="weui-loadmore weui-loadmore_line weui-bg-transparent" style='margin-top: 35px'>
+         <view class="weui-loadmore__tips weui-loadmore__tips_in-line">你没有关注直播间哦</view> 
+    </view> 
+
+    <!--悬浮关注菜单-->
     <view class="menu">
+        <text class="iconfont icon-xihuan" catchtap='tapFollow'></text>
+    </view>
+    <!--悬浮日志菜单-->
+    <view class="menu log">
         <text class="iconfont icon-svg35" catchtap='tapLog'></text>
     </view>
+
+	  <!-- 关注模态框 -->
+    <view class="modal-ignore-mask" wx:if="{{!hiddenmodalput}}" catchtouchmove="preventTouchMove">
+        <modal title="请输入直播间号" confirm-text="关注" cancel-text="取消" bindcancel="cancelSearchLiveRoom" bindconfirm="confirmSearchRoom">  
+            <!-- TODO:自动下移是bug 
+            https://developers.weixin.qq.com/blogdetail?action=get_post_info&docid=0002e48874cf5843e566f81a85b000&highline=input%20%E4%B8%8B%E7%A7%BB               -->
+            <input type='text' placeholder="请输入内容" auto-focus/>  
+        </modal>
+    </view>
+
 </view>
