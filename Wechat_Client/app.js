@@ -42,6 +42,7 @@ App({
       that.wsTask.onOpen(function (header) {
         that.wsTaskFailed = false;
         util.logMessage("wsTask.Open")
+        socketMatters.businessReconnect()
       })
       that.wsTask.onMessage(function(msg){
         socketMatters.onMessage(msg)
