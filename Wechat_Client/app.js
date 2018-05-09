@@ -6,6 +6,7 @@ App({
     url: "wss://127.0.0.1:7272",
     wsTaskFailed: true,
     lastPingPongTime: null,
+    isConnecting : false,
     onLaunch: function () {
         // 建立服务器长连接
         try {
