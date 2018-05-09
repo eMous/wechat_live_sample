@@ -131,9 +131,7 @@ Page({
             video = wx.createVideoContext(e.currentTarget.id);
         //当前video对象 isPlay设置     
         lists[index].isPlay = !!lists[index].isPlay ? false : true;
-
         console.log(lists[index].isPlay)
-
         //isPlay为true 执行播放操作
         if (lists[index].isPlay) {
             //播放当前video对象时其他video对象全部停止
