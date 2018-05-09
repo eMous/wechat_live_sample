@@ -40,9 +40,37 @@ function logMessage(str,bIsWarning = false) {
   wx.setStorageSync('isWarning', isWarning);
 }
 
+function commandBuild(commandNum,data){
+  // var stringDetailCommand = JSON.stringify(data)
+  // var jsonDetailCommand = JSON.parse(stringDetailCommand)
+  var jsonDetailCommand = {"commandNum" : 1, "data": 1};
+  jsonDetailCommand["commandNum"] = commandNum
+  jsonDetailCommand["data"] = data
+  
+  var ret = JSON.stringify(jsonDetailCommand)
+  
+  return ret
+}
+
+// 使得可以在任何页面渲染，任何页面，只要页面是活着的
+function getPage(name){
+    var pagesArray = getCurrentPages() || []
+    
+    for(var i = 0; i < pagesArray.length; i++){
+        var route = pagesArray[i].route;
+        var page_name = route.split("/").pop()
+        if (name == page_name) {
+            return pagesArray[i];
+        }
+    }
+    return null;
+}
+
 module.exports = {
   formatTime: formatTime,
   formatDate: formatDate,
   ossAliyuncs: ossAliyuncs,
-  logMessage: logMessage
+  logMessage: logMessage,
+  commandBuild: commandBuild,
+  getPage: getPage
 }
