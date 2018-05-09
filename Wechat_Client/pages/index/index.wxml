@@ -1,7 +1,7 @@
 <!--index.wxml-->
 <view class="container">
     <view wx:if="{{lists.length > 0}}" class="items">
-        <view class="item" wx:for="{{lists}}" bindtap="detail" wx:for-item="v" wx:key="roomId" data-id="{{index}}" data-title="{{v.title}}">
+        <view class="item" wx:for="{{lists}}" bindtap="enterRoom" wx:for-item="v" wx:key="roomId" data-id="{{index}}" data-title="{{v.title}}">
             <view class="i-top">
                 <image class="i-img"  src="{{v.imgUrl}}">
                 </image> 

@@ -42,6 +42,13 @@
  	   	time:"刚刚"}
     	*/
    		const S_Detail_Room_Info_And_Flush= -3;
+   		/*
+   		*   客户端请求进入某直播间
+   		*   DATA:{roomId:..}
+   		*/
+   		const C_Enter_Room = 4;
+
+   		const S_Enter_Room_Response = -4;
 	
 	}
 
