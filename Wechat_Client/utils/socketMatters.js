@@ -11,12 +11,20 @@ function reconnectWsTask(App) {
     }
     if (app.wsTaskFailed) {
         setTimeout(function () {
+            // 因为官方不提供wsTask属性值的解释，所以自定义正在连接属性
+            // 如果正在连接就不在创立新的连接
+            if (app.isConnecting)
+            {
+                console.log("正在建立连接状态")
+                return;
+            }
+            app.isConnecting = true
+            // 否则不论如何都重新创建并重置连接对象
             app.wsTask = wx.connectSocket(getWSConnectObjectParm())
             app.wsTask.onError(wsTaskOnError)
             app.wsTask.onOpen(wsTaskOnOpen)
             app.wsTask.onMessage(onMessage)
-
-        }, 500)
+        }, 200)
     }else{
         console.log("is false")
     }
@@ -32,7 +40,6 @@ function startPingPong() {
                 if (now_time - app.lastPingPongTime > 15000) {
                     console.log("现在的时间是" + now_time)
                     console.log("上次pingpong的时间是" + app.lastPingPongTime)
-
                     app.wsTask.close({
                         success: function () {
                             console.log("socket 因为心跳包的原因成功close! ")
@@ -88,11 +95,14 @@ function getWSConnectObjectParm(){
             console.log("Websocket to " + app.url + " is success Connected!")
         },
         fail: function () {
-            that.wsTaskFailed = true;
+            app.wsTaskFailed = true;
             util.logMessage("Websocket to " + app.url + " is fail Connected!", true)
             console.log("Websocket to " + app.url + " is fail Connected!")
             reconnectWsTask(app.url);
         },
+        complete:function(){
+            app.isConnecting = false
+        }
     }
     return wsConnectObjectParm
 }
@@ -100,17 +110,13 @@ function getWSConnectObjectParm(){
 function onMessage(msg) {
     var app = getApp()
     var data = JSON.parse(msg.data)
-
-    if (data.hasOwnProperty("type")) {
-        if (data["type"] == "ping") {
-            console.log("send ping-pong ..")
-            send(0, "pong")
-            app.lastPingPongTime = Date.parse(new Date())
-        }
-    }
     const Command = com.Command
     const detailData = data["data"]
+
     switch (parseInt(data["commandNum"])) {
+        case Command.Ping_Pong:
+            onPing()
+            break;
         case Command.S_Busniess_Reconnect_Info:
             onConnectDetailInfo(detailData)
             break
@@ -126,7 +132,6 @@ function onMessage(msg) {
 }
 function wsTaskOnOpen(header){
     var app = getApp()
-
     app.wsTaskFailed = false;
     app.lastPingPongTime = Date.parse(new Date()) + 15000
     util.logMessage("wsTask.Open")
@@ -147,6 +152,13 @@ function addRoom(roomId) {
     send(retCommand)
 }
 // -------- 具体数据包处理函数 -------- 
+function onPing(){
+    console.log("接收到心跳数据")
+    var app = getApp()
+    app.lastPingPongTime = Date.parse(new Date())
+    var retCommand = util.commandBuild(com.Command.Ping_Pong, {})
+    send(retCommand)
+}
 function onConnectDetailInfo(data) {
     var roomIds = data["roomIds"] || []
     console.log("room ids === " + roomIds)
