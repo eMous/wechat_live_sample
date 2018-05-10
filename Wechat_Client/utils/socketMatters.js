@@ -18,6 +18,8 @@ function reconnectWsTask(App) {
                 console.log("正在建立连接状态")
                 return;
             }
+            console.log("不在建立连接状态，所以再new一个对象，并覆盖之前的")
+            
             app.isConnecting = true
             // 否则不论如何都重新创建并重置连接对象
             app.wsTask = wx.connectSocket(getWSConnectObjectParm())
@@ -90,7 +92,7 @@ function getWSConnectObjectParm(){
     var wsConnectObjectParm = {
         url: app.url,
         success: function () {
-            app.wsTaskFailed = false;
+            // app.wsTaskFailed = false;
             util.logMessage("Websocket to " + app.url + " is success Connected!")
             console.log("Websocket to " + app.url + " is success Connected!")
         },
@@ -122,11 +124,9 @@ function onMessage(msg) {
             break
         case Command.S_Detail_Room_Info:
             onRoomDetailInfo(detailData)
-            console.log("room  === " + JSON.stringify(detailData))
             break
         case Command.S_Detail_Room_Info_And_Flush:
             onRoomDetailInfoAndFlush(detailData)
-            console.log("room and Flush === " + JSON.stringify(detailData))
             break
     }
 }
@@ -149,6 +149,10 @@ function wsTaskOnError(mess){
 // -------- 包发送入口 --------
 function addRoom(roomId) {
     var retCommand = util.commandBuild(com.Command.C_Add_Room, { roomId: roomId })
+    send(retCommand)
+}
+function enterRoom(roomId){
+    var retCommand = util.commandBuild(com.Command.C_Enter_Room, { roomId: roomId })
     send(retCommand)
 }
 // -------- 具体数据包处理函数 -------- 
@@ -206,5 +210,6 @@ module.exports = {
     businessReconnect: businessReconnect,
     addRoom: addRoom,
     startPingPong: startPingPong,
-    wsTaskOnOpen: wsTaskOnOpen
+    wsTaskOnOpen: wsTaskOnOpen,
+    enterRoom: enterRoom,
 }

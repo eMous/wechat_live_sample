@@ -150,12 +150,13 @@ Page({
         }
     },
     //进入详情
-    detail: function (e) {
-        console.log(e.currentTarget.dataset.id)
-        wx.navigateTo({
-            url: '../details/detail?id=' + e.currentTarget.dataset.id + '&title=' + e.currentTarget.dataset.title
-        })
-    },
+    enterRoom: socketMatters.enterRoom,
+    // function (e) {
+    //     console.log(e.currentTarget.dataset.id)
+    //     wx.navigateTo({
+    //         url: '../details/detail?id=' + e.currentTarget.dataset.id + '&title=' + e.currentTarget.dataset.title
+    //     })
+    // },
 
     tapLog: function () {
         wx.navigateTo({ url: '../logs/logs' });
