@@ -3,6 +3,7 @@ var com = require("socketCommands")
 var dat = require("data")
 
 function reconnectWsTask(App) {
+    console.log("in reconnectWsTask")
     // Warning: 在这里把 var app = App 替换成 var app = getApp() 会出错，不知为何。所以只能在 app 的on函数里，把this 传进来
     if (App != undefined){
         var app = App
@@ -10,7 +11,7 @@ function reconnectWsTask(App) {
         app = getApp()
     }
     if (app.wsTaskFailed) {
-        setTimeout(function () {
+            console.log("重连连接")
             // 因为官方不提供wsTask属性值的解释，所以自定义正在连接属性
             // 如果正在连接就不在创立新的连接
             if (app.isConnecting)
@@ -18,15 +19,15 @@ function reconnectWsTask(App) {
                 console.log("正在建立连接状态")
                 return;
             }
-            console.log("不在建立连接状态，所以再new一个对象，并覆盖之前的")
-            
+            // console.log("不在建立连接状态，所以再new一个对象，并覆盖之前的")
+            console.log("设置正在连接状态")
             app.isConnecting = true
+            
             // 否则不论如何都重新创建并重置连接对象
-            app.wsTask = wx.connectSocket(getWSConnectObjectParm())
+            app.wsTask = wx.connectSocket(getWSConnectObjectParm(app))
             app.wsTask.onError(wsTaskOnError)
             app.wsTask.onOpen(wsTaskOnOpen)
             app.wsTask.onMessage(onMessage)
-        }, 200)
     }else{
         console.log("is false")
     }
@@ -36,7 +37,7 @@ function startPingPong() {
     setInterval(function () {
         let app = getApp()
         if (!app.wsTaskFailed) {
-            console.log("任务没有失败！")
+            //console.log("任务没有失败！")
             if (app.lastPingPongTime != null) {
                 var now_time = Date.parse(new Date())
                 if (now_time - app.lastPingPongTime > 15000) {
@@ -46,13 +47,17 @@ function startPingPong() {
                         success: function () {
                             console.log("socket 因为心跳包的原因成功close! ")
                             util.logMessage("socket 因为心跳包的原因成功close! ", true),
+                                console.log("将wsTaskFailed = true")
                             app.wsTaskFailed = true
+                            console.log("从心跳成功关闭处，重新建立连接")
                             reconnectWsTask(app)
                         },
                         fail: function () {
                             console.log("socket 因为心跳包的原因失败close! ")
                             util.logMessage("socket 因为心跳包的原因失败close! ", true)
+                            console.log("将wsTaskFailed = true")
                             app.wsTaskFailed = true
+                            console.log("从心跳失败关闭处，重新建立连接")
                             reconnectWsTask(app)
                         },
                     })
@@ -67,43 +72,76 @@ function startPingPong() {
 function businessReconnect() {
     var app = getApp()
     var wsTask = app.wsTask
-
+    
+    console.log("businessReconnect")
+    // ID 绑定
     var ret = util.commandBuild(com.Command.C_Busniess_Reconnect, { id: "anon" })
-    console.log(ret)
     send(ret)
+
 }
 
 // 包装带failLog的Send函数
 function send(msgSend) {
     var app = getApp()
     var wsTask = app.wsTask
+    
+    // 不是断线状态 && 不是正在连接中
+    if(msgSend["data"]){
+        console.log("app.wsTaskFailed == " + app.wsTaskFailed)
+        console.log("app.isConnecting == " + app.isConnecting)
+        console.log("msg == " + msgSend)
+    }
 
-    wsTask.send({
-        data: msgSend,
-        fail: function () {
-            util.logMessage(msgSend + "发送失败", true)
-        }
-    })
+    if (!app.wsTaskFailed){
+        console.log("send")
+        wsTask.send({
+            data: msgSend,
+            fail: function () {
+                util.logMessage(msgSend + "发送失败", true)
+            }
+        })
+        return;
+    } else if (app.isConnecting){
+        console.log("正在等待连接建立,先将msg存储在队列" + msgSend)
+        app.reconnectMessageQueqe.push(msgSend)
+    }
+    else{
+        console.log("enqueqe")
+        // 提示用户等待断线重连
+        app.reconnectMessageQueqe.push(msgSend)
+        console.log("app.wsTaskFailed == " + app.wsTaskFailed)
+        console.log("app.isConnecting == " + app.isConnecting)
+        console.log("从发送失败处，重新建立连接，发送的东西是" + msgSend)
+        reconnectWsTask(app)
+    }
 }
 
 // -------- wxTask回调包装 -------
-function getWSConnectObjectParm(){
-    var app = getApp()
+function getWSConnectObjectParm(App){
+    var app = App
     var wsConnectObjectParm = {
         url: app.url,
         success: function () {
+            console.log("连接connect success")
             // app.wsTaskFailed = false;
             util.logMessage("Websocket to " + app.url + " is success Connected!")
             console.log("Websocket to " + app.url + " is success Connected!")
         },
         fail: function () {
+            console.log("连接connect fail")
+            console.log("将wsTaskFailed = true")
+            
             app.wsTaskFailed = true;
+            app.isConnecting = false
+
             util.logMessage("Websocket to " + app.url + " is fail Connected!", true)
             console.log("Websocket to " + app.url + " is fail Connected!")
+            console.log("从连接失败处，重新建立连接")
             reconnectWsTask(app.url);
         },
         complete:function(){
-            app.isConnecting = false
+            console.log("连接complete")
+            
         }
     }
     return wsConnectObjectParm
@@ -125,91 +163,110 @@ function onMessage(msg) {
         case Command.S_Detail_Room_Info:
             onRoomDetailInfo(detailData)
             break
-        case Command.S_Detail_Room_Info_And_Flush:
-            onRoomDetailInfoAndFlush(detailData)
+        case Command.S_Enter_Room_Response:
+            onEnterRoomResponse(detailData)
             break
+        case Command.S_Chat_Details:
+            onChatDetails(detailData)
     }
 }
 function wsTaskOnOpen(header){
+    console.log("连接Open")
     var app = getApp()
     app.wsTaskFailed = false;
+    app.isConnecting = false
     app.lastPingPongTime = Date.parse(new Date()) + 15000
     util.logMessage("wsTask.Open")
+    console.log("wsTaskOnOpen -> businessReconnect")
     businessReconnect()
     startPingPong()
 }
 function wsTaskOnError(mess){
     var app = getApp()
+    console.log("将wsTaskFailed = true")
     app.wsTaskFailed = true;
+    app.isConnecting = false
     app.lastPingPongTime = Date.parse(new Date()) + 15000
     util.logMessage("onwsTask.onError:" + mess, true)
     console.log("onwsTask.onError:" + mess, true)
+
+    console.log("从连接失败处，重新建立连接")
     reconnectWsTask();
 }
 // -------- 包发送入口 --------
-function addRoom(roomId) {
-    var retCommand = util.commandBuild(com.Command.C_Add_Room, { roomId: roomId })
+
+function roomInfo(roomId){
+    console.log("roomInfo")
+    var retCommand = util.commandBuild(com.Command.C_Detail_Room_Info, { roomId: roomId })
     send(retCommand)
 }
+
 function enterRoom(roomId){
+    console.log("enterRoom" + { roomId: roomId })
     var retCommand = util.commandBuild(com.Command.C_Enter_Room, { roomId: roomId })
     send(retCommand)
 }
 // -------- 具体数据包处理函数 -------- 
 function onPing(){
-    console.log("接收到心跳数据")
+    //console.log("接收到心跳数据")
     var app = getApp()
     app.lastPingPongTime = Date.parse(new Date())
     var retCommand = util.commandBuild(com.Command.Ping_Pong, {})
     send(retCommand)
 }
 function onConnectDetailInfo(data) {
-    var roomIds = data["roomIds"] || []
-    console.log("room ids === " + roomIds)
-    dat.dataInstance.roomIds = roomIds
+    console.log("补发失效时的未发送的包")
+    var app = getApp();
 
-    roomIds.forEach(function (roomId) {
-        var retCommand = util.commandBuild(com.Command.C_Detail_Room_Info, { roomId: roomId })
-        send(retCommand)
-    })
+    // 发送失效队列
+    for (var i = 0; i < app.reconnectMessageQueqe.length; i++) {
+        send(app.reconnectMessageQueqe[i])
+    }
+    app.reconnectMessageQueqe = []
+
+    // 断线重连成功回调
+    // ...
 }
 function onRoomDetailInfo(data) {
-    console.log("ssssssssss" + dat.dataInstance.roomDetailInfo)
-    dat.dataInstance.roomDetailInfo.push(data.detailInfo);
-}
-function onRoomDetailInfoAndFlush(data) {
-    if (data.success == true) {
-        console.log("ssssssssss" + dat.dataInstance.roomDetailInfo)
-        dat.dataInstance.roomDetailInfo.push(data.detailInfo);
-        // Most Beautiful Hack.
-        currentPage: getCurrentPages()[0].setData({ lists: dat.dataInstance.roomDetailInfo })
-        wx.showToast({
-            title: "添加成功",
-            icon: "success",
-            duration: 1000
-        })
-        // wx.reLaunch({url:"index"})
-    } else if (data.success == 0) {
-        wx.showToast({
-            title: "房间号不存在",
-            icon: "none",
-            duration: 2000
-        })
-    } else if (data.success == -1) {
-        wx.showToast({
-            title: "您已关注该直播间",
-            icon: "none",
-            duration: 2000
+    console.log(data)
+    if (data.success == 1 || data.success == 2) {
+        // 进入404
+        wx.redirectTo({
+            url: '/pages/notfound/notfound',
         })
     }
 
+    if (data.success == -1){
+        console.log(data.detailInfo)
+        util.getPage("detail").setData(data.detailInfo)
+        console.log(data.detailInfo.roomId)
+        enterRoom(data.detailInfo.roomId)
+    }
+}
+function onEnterRoomResponse(data){
+    if(data.success == -1){
+        console.log("onEnterRoomResponse fail. 因为房间不不存在,房间号是" + data.roomId)
+        // 进入404
+        wx.redirectTo({
+            url: '/pages/notfound/notfound',
+        })
+    } else if (data.success == 0){
+        console.log("onEnterRoomResponse success. 房间号是" + data.roomId)
+    }
+}
+function onChatDetails(data){
+    console.log(data)
+    if(data[0] == undefined){
+        console.log("no more data..")
+        return
+    }
+    
+    var retCommand = util.commandBuild(com.Command.C_More_Chat_Details, { roomId: 1, id: data[0]["id"]})
+    send(retCommand)
 }
 module.exports = {
     onMessage: onMessage,
     reconnectWsTask: reconnectWsTask,
-    businessReconnect: businessReconnect,
-    addRoom: addRoom,
     startPingPong: startPingPong,
-    wsTaskOnOpen: wsTaskOnOpen,
-    enterRoom: enterRoom,
+    roomInfo:roomInfo
 }

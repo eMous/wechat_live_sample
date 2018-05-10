@@ -235,6 +235,10 @@ video {
   animation: none;
 }
 
+.me-chat{
+    
+}
+
 @-webkit-keyframes emoji-move-in {
   0% {
     margin-bottom: -200px;

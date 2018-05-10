@@ -1,0 +1,14 @@
+/* pages/notfound/notfound.wxss */
+
+.container{
+    width: 100%;
+    height: 100%
+}
+
+.notice{
+    position: absolute;
+    top:50%;
+    color: rosybrown;
+    transform:translate(0,-50%);
+    font-size: 27px;
+}

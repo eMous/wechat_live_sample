@@ -41,11 +41,13 @@ function strAddTime(str){
 function logMessage(str,bIsWarning = false) {
   var logs = wx.getStorageSync('logs') || []
   logs.unshift(strAddTime(str))
-  wx.setStorageSync('logs', logs);
+  wx.setStorageSync('logs', logs)
 
   var isWarning = wx.getStorageSync('isWarning') || [];
   isWarning.unshift(bIsWarning)
   wx.setStorageSync('isWarning', isWarning);
+
+  return strAddTime(str)
 }
 
 function commandBuild(commandNum,data){

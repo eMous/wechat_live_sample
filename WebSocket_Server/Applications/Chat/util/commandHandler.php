@@ -64,11 +64,25 @@
 			"commet" => 789,
 			"time" => "刚刚" ],
 		];
+		$globalData->roomChatDetail = [
+		1 => ["online_uids"=>[],
+			"chats"=>[
+					["system"=>true,"content"=>"4123","time"=>24124],
+					["uid"=>"anon","content"=>"1","contentType"=>1,"time"=>23123],
+					["uid"=>"anon","content"=>"2","contentType"=>2,"time"=>51242, "voiceTime"=>2000],
+					["uid"=>"anon","content"=>"3","contentType"=>2,"time"=>51242, "voiceTime"=>2000],
 
-		// $globalData->chatRoom[1] 用来存在1号房间看直播的用户id
-		$globalData->chatRoom = [];
-		// $globalData->chatRoomDetail[1][] = {"uid"=> "123", "content"=> "sdasd", "type"=>"1", "time"=> "123"} ,用来存具体聊天记录
-		$globalData->chatRoomDetail = [];
+					["uid"=>"anon","content"=>"4","contentType"=>2,"time"=>51242, "voiceTime"=>2000],
+
+					["uid"=>"anon","content"=>"5","contentType"=>2,"time"=>51242, "voiceTime"=>2000],
+
+					["uid"=>"anon","content"=>"6","contentType"=>2,"time"=>51242, "voiceTime"=>2000],
+
+					["uid"=>"anon","content"=>"7","contentType"=>2,"time"=>51242, "voiceTime"=>2000],
+
+				]
+			]
+		];
 	}
 	function onBusinessWorkerStart($worker){
 
@@ -93,15 +107,9 @@
 		}
 		$commandNum = (int)$messageArr["commandNum"];
 
-		if($commandNum == 0){
-			var_dump($messageArr);
-		}
-
-
 		$data = $messageArr["data"];
 		switch ($commandNum) {
 			case Commands::Ping_Pong:
-				echo "on Ping_Pong";
 				break;
 			case Commands::C_Busniess_Reconnect:
 				echo "on C_Busniess_Reconnect \n";
@@ -119,13 +127,23 @@
 				echo "on C_Enter_Room \n";
 				onEnterRoom($client_id, $data);
 				break;
+			case Commands::C_Chat:
+				echo "on C_Chat_Room \n";
+				onChat($client_id, $data);
+				break;
+			case Commands::C_More_Chat_Details:
+				echo "on C_More_Chat_Details \n";
+				onMoreChatDetails($client_id, $data);
+				break;
 			default:
 				# code...
 				break;
 		}
 	}
 
-	
+	function handleClose($client_id){
+		onLeaveRoom($client_id);
+	}
 	// -------- 具体数据包处理函数 -------- 
 
 	function onConnectRequestInfo($client_id, $data){
@@ -134,68 +152,195 @@
 		Gateway::bindUid($client_id, $uid);
 		$_SESSION['uid'] = $uid;
 
-		$retRoomIds =  Data::$globalData->roomIds[$uid];
-
-		$commandSend = commandBuild(Commands::S_Busniess_Reconnect_Info, ["roomIds"=>$retRoomIds]);
+		$commandSend = commandBuild(Commands::S_Busniess_Reconnect_Info, []);
 		Gateway::sendToCurrentClient($commandSend);
 	}
 
 	function onDetailRoomInfo($client_id, $data){
 		$uid = $_SESSION["uid"];
+		$globalData = Data::$globalData;
 
 		$roomId = (int)$data["roomId"];
 
-		$roomDetail = Data::$globalData->roomInfo[$roomId];
+		$roomInfo = $globalData->roomInfo;
+		
+		$failCode = -1;
+		// 房间不存在
+		if(!array_key_exists($roomId, $roomInfo)){
+			$failCode = 1;
+		}else if(!$roomInfo[$roomId]["isLive"]){
+			// 直播间关闭
+			$failCode = 2;
+		}
 
-		$commandSend = commandBuild(Commands::S_Detail_Room_Info, ["roomId"=>$roomId,"detailInfo"=>$roomDetail]);
+		// 出错
+		if($failCode != -1){
+			$commandSend = commandBuild(Commands::S_Detail_Room_Info, ["success"=> $failCode]);
+		}
+		else{
+			$roomInfo[$roomId]["roomId"] = $roomId;
+			$commandSend = commandBuild(Commands::S_Detail_Room_Info, ["success"=> -1, "detailInfo"=>$roomInfo[$roomId]]);
+		}
 		Gateway::sendToCurrentClient($commandSend);
 	}
 
-	function onAddRoom($client_id,$data){
-		$globalData = Data::$globalData;
-
-		if(!array_key_exists($data["roomId"], $globalData->roomInfo)){
-			$ret = ["success"=>0, "data"=>[]];
-			$commandSend = commandBuild(Commands::S_Detail_Room_Info_And_Flush, $ret);
-			Gateway::sendToCurrentClient($commandSend);
-			return;
-		}
-		$uid = $_SESSION['uid'];
-		if (in_array($data["roomId"], $globalData->roomIds["$uid"])){
-			$ret = ["success"=>-1, "data"=>[]];
-			$commandSend = commandBuild(Commands::S_Detail_Room_Info_And_Flush, $ret);
-			Gateway::sendToCurrentClient($commandSend);
-			return;
+	function onLeaveRoom($client, $data = null){
+		
+		// 清除服务器历史里的房间的记录，同时一个人只能在一个直播间内
+		if(isset($_SESSION["roomId"])){
+			$pre_room_id = $_SESSION["roomId"];
+			if(isset($globalData->roomChatDetail[$pre_room_id])){
+				$key = array_search($uid, $globalData->roomChatDetail[$pre_room_id]);
+				if($key != false){
+					unset($globalData->roomChatDetail[$pre_room_id][$key]);
+				}
+			}
+			Gateway::leaveGroup($client_id,$pre_room_id);
 		}
 
-		$globalData->roomIds["$uid"][] = $data["roomId"];
-
-		$ret = ["success"=>true, "detailInfo"=>$globalData->roomInfo[$data["roomId"]]];
-		$commandSend = commandBuild(Commands::S_Detail_Room_Info_And_Flush, $ret);
-		Gateway::sendToCurrentClient($commandSend);
+		// 清除指定的
+		if (isset($data["roomId"])) {
+			$roomId = $data["roomId"];
+			if (isset($globalData->roomChatDetail[$roomId])) {
+				$key = array_search($uid, $globalData->roomChatDetail[$roomId]);
+				if($key != false){
+					unset($globalData->roomChatDetail[$roomId][$key]);
+				}
+			}
+			Gateway::leaveGroup($client_id,$roomId);
+		}
 	}
 
 	function onEnterRoom($client_id, $data){
+		$uid = $_SESSION['uid'];
 		$globalData = Data::$globalData;
 		$roomId = $data["roomId"];
+		
+		// 先退其他的房间
+		onLeaveRoom($client_id);
+
 		// 房间不存在
 		if(!array_key_exists($roomId, $globalData->roomInfo)){
-			$ret = ["success"=>0, "data"=>[]];
+			$ret = ["success"=>-1,"roomId"=>$roomId];
 			$commandSend = commandBuild(Commands::S_Enter_Room_Response, $ret);
 			Gateway::sendToCurrentClient($commandSend);
 			return;
 		}
-
 		// 房间存在就直接进去，暂时不考虑已经进入之类的
 		else{
-			// 之后用redis,这里要考虑上锁的问题
-			
-			// 建立聊天室
-			if(!isset($globalData->chatRoom[$roomId])){
-				// 用来存在看直播的用户
-				$globalData->chatRoom[$roomId] = [];
+			$ret = ["success"=>0,"roomId"=>$roomId];
+			$commandSend = commandBuild(Commands::S_Enter_Room_Response, $ret);
+			Gateway::sendToCurrentClient($commandSend);
 
+			// 之后用redis,这里要考虑上锁的问题
+			$roomChatDetail = $globalData->roomChatDetail;
+			// 建立聊天室
+			if(!isset($roomChatDetail[$roomId])){
+				$roomChatDetail[$roomId] = [];
+				$roomChatDetail[$roomId]["online_uids"] = [];
+				$roomChatDetail[$roomId]["chats"] = [];
+			}
+			$targetRoomChatDetail = &$roomChatDetail[$roomId];
+
+			// 如果已经加入直播间，直接返回				
+			Gateway::joinGroup($client_id,$roomId);
+			if (in_array("$uid", $targetRoomChatDetail["online_uids"])) {
+				echo("$uid already add in the live room \n");
+				return;
+			}else{
+				// 加入直播间
+				$targetRoomChatDetail["online_uids"][] = $uid;
+				$arr = ["system"=>true,"content"=>"欢迎用户{$uid}进入直播间！","time"=>getMillisecond()];
+				$targetRoomChatDetail["chats"][] = $arr;
+				$globalData->roomChatDetail = $roomChatDetail;
+
+				// 通知进入直播间
+				$arr["id"] = array_search($arr, $targetRoomChatDetail["chats"]);
+				$command = commandBuild(Commands::S_Chat_Details, [$arr]);
+				Gateway::sendToGroup($roomId,$command);
+			}
+			
+		}
+	}
+
+	function onChat($client_id,$data){
+		$uid = $_SESSION['uid'];
+		$globalData = Data::$globalData;
+		$roomId = $data["roomId"];
+
+		// 房间不存在
+		if(!array_key_exists($roomId, $globalData->roomInfo)){
+			echo "no such a live room. $roomId \n";
+			return;
+		}
+
+		$roomChatDetail = $globalData->roomChatDetail;
+		// 聊天室未建立
+		if(!isset($roomChatDetail[$roomId])){
+			echo "no such a live chat room. $roomId \n";
+			return;
+		}
+		// 人不在房间内
+		if (!in_array($uid, $roomChatDetail[$roomId]["online_uids"])) {
+			echo "onChat $uid is not in the room $roomId.\n";
+			return;
+		}
+
+		// 添加记录
+		$arr = ["uid"=>$uid, "content"=>$data["content"], "time"=>getMillisecond(), "contentType"=>$data["contentType"]];
+		if($data["contentType"] == 2)
+			$arr["voiceTime"] = $data["voiceTime"];
+
+		$roomChatDetail[$roomId]["chats"][] = $arr;
+		$globalData->roomChatDetail = $roomChatDetail;
+
+		$arr["id"] = array_search($arr, $targetRoomChatDetail["chats"]);
+		$command = commandBuild(Commands::S_Chat_Details, [$arr]);
+		Gateway::sendToGroup($roomId,$command);
+	}
+
+
+	// 返回id之前的5条消息
+	function onMoreChatDetails($client_id, $data){
+		$uid = $_SESSION['uid'];
+		$globalData = Data::$globalData;
+		$roomId = $data["roomId"];
+		$idBefore = $data["id"];
+		// 房间不存在
+		if(!array_key_exists($roomId, $globalData->roomInfo)){
+			echo "no such a live room. $roomId \n";
+			return;
+		}
+
+		$roomChatDetail = $globalData->roomChatDetail;
+		// 聊天室未建立
+		if(!isset($roomChatDetail[$roomId])){
+			echo "no such a live chat room. $roomId \n";
+			return;
+		}
+		// 人不在房间内
+		if (!in_array($uid, $roomChatDetail[$roomId]["online_uids"])) {
+			echo "onMoreChatDetails $uid is not in the room $roomId.\n";
+			return;
+		}
+
+		$ret_arr = [];
+		$targetChats = $roomChatDetail[$roomId]["chats"];
+		$item = [];
+		for($i = 1; $i <= 5; $i++){
+			if(array_key_exists($idBefore-$i, $targetChats)){
+				$item = $targetChats[$idBefore-$i];
+				$item["id"] = $idBefore-$i;
+				array_unshift($ret_arr, $item);
 			}
 		}
+		var_dump($ret_arr);
+		$command = commandBuild(Commands::S_Chat_Details, $ret_arr);
+		Gateway::sendToCurrentClient($command);
+	}
+
+	function getMillisecond() {
+		list($t1, $t2) = explode(' ', microtime());
+		return (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
 	}
 ?>
