@@ -1,38 +1,28 @@
-
 <!--引入加载更多模版-->
 <import src="../../template/loading" />
 
 <!--详情页-->
 <view class="container">
-  <view class="c-top">
-    <view class="c-live-img" style='height:{{livePlayersHeight}}px'>
-      <live-player wx:if="{{live}}"
-       class="i-video" id="detailLivePlayer" 
-       src="{{live_src}}" 
-       bindtap="play" mode="live" background-mute="true"         
-       object-fit="fillCrop"
-       autoplay bindstatechange="stateChange" bindnetstatus="netStateChange"
-       binderror="error" style="width: 100%; height: 100%;">
-       <cover-view class='tap-cover'catchtap='tapLivePlayerArea'></cover-view>
-        <!-- 这里如果不用hidden用wx:if就有时候无法隐藏 -->
-        <!-- 无法播放gif也是小程序本身的bug：https://developers.weixin.qq.com/blogdetail?action=get_post_info&docid=0004e87fd64860f6f416b58755ac00&highline=gif -->
-        <cover-image class='loading-pic' src='/images/common/loading.gif' hidden="{{!isShowLoadingGif}}"></cover-image>
-        <cover-view wx:if="{{isBarShow}}" class='bar-container' 
-        style='height:{{barHeight}}px;bottom:0px' catchtap='ignore'>
-          <cover-image catchtap='tapPauseButton' class='stopButton' 
-          style='left:0px;width:{{barHeight}}px;height:100%;' src="{{isPauseButtonShow ? pauseButtonSrc : playButtonSrc}}"></cover-image>
-          
-          <cover-image catchtap='tapFullScreenButton' class='fullScreenButton'style='right:0px;width:{{barHeight}}px;height:100%;'       
-          src='/images/common/fullScreenButton.png'></cover-image> 
-        </cover-view>
-      </live-player>
-      <image id="detailImg" wx:else class="i-img" src="{{detail.imgUrl}}"></image>
+    <view class="c-top">
+        <view class="c-live-img" style='height:{{livePlayersHeight}}px'>
+            <live-player wx:if="{{live}}" class="i-video" id="detailLivePlayer" src="{{liveplayersrc}}" bindtap="play" mode="live" background-mute="true" object-fit="fillCrop" autoplay bindstatechange="stateChange" bindnetstatus="netStateChange" binderror="error" style="width: 100%; height: 100%;">
+                <cover-view class='tap-cover' catchtap='tapLivePlayerArea'></cover-view>
+                <!-- 这里如果不用hidden用wx:if就有时候无法隐藏 -->
+                <!-- 无法播放gif也是小程序本身的bug：https://developers.weixin.qq.com/blogdetail?action=get_post_info&docid=0004e87fd64860f6f416b58755ac00&highline=gif -->
+                <cover-image class='loading-pic' src='/images/common/loading.gif' hidden="{{!isShowLoadingGif}}"></cover-image>
+                <cover-view wx:if="{{isBarShow}}" class='bar-container' style='height:{{barHeight}}px;bottom:0px' catchtap='ignore'>
+                    <cover-image catchtap='tapPauseButton' class='stopButton' style='left:0px;width:{{barHeight}}px;height:100%;' src="{{isPauseButtonShow ? pauseButtonSrc : playButtonSrc}}"></cover-image>
+
+                    <cover-image catchtap='tapFullScreenButton' class='fullScreenButton' style='right:0px;width:{{barHeight}}px;height:100%;' src='/images/common/fullScreenButton.png'></cover-image>
+                </cover-view>
+            </live-player>
+            <image id="detailImg" wx:else class="i-img" src="{{detail.imgUrl}}"></image>
 
 
-    </view>
+        </view>
 
-    <!--简介-->
-    <!-- <view class="t-info">
+        <!--简介-->
+        <!-- <view class="t-info">
       <view class="ti-top">
         <text>400,000次播放</text>
         <text>发表于：1小时前</text>
@@ -52,19 +42,11 @@
         </view>
       </view>
     </view> -->
-  </view>
 
-  <!--评论列表-->
-  <view class="comments">
-    <view class="item touch-active" wx:for="{{comments}}" wx:key="" wx:for-item="c">
-        <view class="chat">
-            <view class="chat-uid">{{c.uid}}</view>
-            <view wx:if="{{c.contentType == 1}}" class="chat-content">{{c.content}}</view>
-            <view wx:if="{{c.contentType == 2}}" class="chat-voice">
-            <button></button>
-            </view>
-        </view>
-      <!-- <view class="i-left">
+        <!--评论列表-->
+        <view class="comments">
+            <view class="item touch-active" wx:for="{{comments}}" wx:key="" wx:for-item="c">
+                <!-- <view class="i-left">
         <image class="c-u-img" src="{{c.avatar}}"></image>
       </view>
       <view class="i-right">
@@ -78,37 +60,55 @@
           {{c.content}}
         </view>
       </view> -->
+            </view>
+        </view>
+        <!-- 聊天列表 -->
+        <scroll-view scroll-y style="height: {{second_height}}rpx;padding-bottom:20px" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+            <!-- <view class="chat-container"> -->
+                <view class="chat touch-active" wx:if="{{c.contentType}}" id='a{{c.id}}' wx:for="{{chatDetail}}" wx:key="" wx:for-item="c">
+                    <view class="system-message" wx:if="{{c.system == true}}">
+                        系统消息：{{c.content}}
+                    </view>
+                    <view wx:else class="chat-uid inline-b" style="color:{{c.uid == 'anon'? 'blue' : 'grey'}}">{{c.uid}}:</view>
+                    <view wx:if="{{c.contentType == 1}}" class="chat-content inline-b">{{c.content}}</view>
+                    <view wx:if="{{c.contentType == 2}}" class="chat-voice inline-b">
+                        <button type="default" style="display:inline-block" size="mini" bindtap="default" hover-class="other-button-hover"> default </button>
+                    </view>
+                </view>
+            <!-- </view> -->
+        </scroll-view>
     </view>
-  </view>
-
-  <!-- //加载更多模版
+    <!-- //加载更多模版
   <block wx:if="{{isLoading}}">
     <template is="loading" />
   </block>
   <block wx:else>
     <template is="nodata" />
   </block> -->
-  
 
-  <!--评论盒子-->
-  <view class="cf-bg" catchtap="cemojiCfBg" style="display:{{cfBg ? 'block' : 'none'}}"></view>
-  <!-- isFullScreen 判断用来fix 全屏后还会出现评论输入框的bug -->
-  <view class="comment-fixed" wx:if="{{!isFullScreen}}">
-    <view class="cf-box">
-      <view class="emoji iconfont icon-emoji" catchtap="emojiShowHide" style='display:none'></view>
-      <textarea fixed="true" class="cf-content" bindfocus="textAreaFocus" maxlength="200" bindblur="textAreaBlur" auto-height value="{{content}}" placeholder="我要评论"cursor-spacing="50px" />
-      <text class="cf-send touch-active" bindtap="send">发送</text>
+
+    <!--评论盒子-->
+    <view class="cf-bg" catchtap="cemojiCfBg" style="display:{{cfBg ? 'block' : 'none'}}"></view>
+    <!-- isFullScreen 判断用来fix 全屏后还会出现评论输入框的bug -->
+    <view class="comment-fixed" wx:if="{{!isFullScreen}}">
+        <view class="cf-box">
+            <view class="emoji iconfont icon-emoji" catchtap="emojiShowHide" style='display:none'></view>
+            <textarea fixed="true" class="cf-content" bindfocus="textAreaFocus" maxlength="200" bindblur="textAreaBlur" auto-height value="{{content}}" placeholder="我要评论" cursor-spacing="50px" />
+            <text class="cf-send touch-active" bindtap="send">发送</text>
+        </view>
+
+        <!--emoji表情盒子-->
+        <view class="emoji-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}} {{isLoad ? 'no-emoji-move' : ''}}">
+            <scroll-view scroll-y="true" bindscroll="emojiScroll" style="height:200px">
+                <block wx:for="{{emojis}}" wx:for-item="e" wx:key="">
+                    <view class="emoji-cell">
+                        <image class="touch-active" catchtap="emojiChoose" src="http://soupu.oss-cn-shanghai.aliyuncs.com/emoji/{{e.emoji}}.png" data-emoji="{{e.char}}" data-oxf="{{e.emoji}}"></image>
+                    </view>
+                </block>
+            </scroll-view>
+        </view>
     </view>
 
-    <!--emoji表情盒子-->
-    <view class="emoji-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}} {{isLoad ? 'no-emoji-move' : ''}}">
-      <scroll-view scroll-y="true" bindscroll="emojiScroll" style="height:200px">
-        <block wx:for="{{emojis}}" wx:for-item="e" wx:key="">
-          <view class="emoji-cell">
-            <image class="touch-active" catchtap="emojiChoose" src="http://soupu.oss-cn-shanghai.aliyuncs.com/emoji/{{e.emoji}}.png" data-emoji="{{e.char}}" data-oxf="{{e.emoji}}"></image>
-          </view>
-        </block>
-      </scroll-view>
-    </view>
-  </view>
+    <import src="../../template/logmenu" />
+    <template is="logmenu" />
 </view>

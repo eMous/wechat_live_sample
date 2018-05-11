@@ -83,6 +83,8 @@
 				]
 			]
 		];
+
+
 	}
 	function onBusinessWorkerStart($worker){
 
@@ -175,7 +177,7 @@
 
 		// 出错
 		if($failCode != -1){
-			$commandSend = commandBuild(Commands::S_Detail_Room_Info, ["success"=> $failCode]);
+			$commandSend = commandBuild(Commands::S_Detail_Room_Info, ["success"=> $failCode,"roomIdSearched"=>$roomId]);
 		}
 		else{
 			$roomInfo[$roomId]["roomId"] = $roomId;
@@ -261,6 +263,7 @@
 			}
 			
 		}
+		//test();
 	}
 
 	function onChat($client_id,$data){
@@ -342,5 +345,24 @@
 	function getMillisecond() {
 		list($t1, $t2) = explode(' ', microtime());
 		return (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
+	}
+
+	function test(){
+			$timer_id = \Workerman\Lib\Timer::add(2, function()use(&$timer_id){
+			Data::$globalData->chatTimer = $timer_id;
+
+			$arr_insert = ["uid"=>rand(0,5) > 2 ? "anon" : "simulator", "content"=>"test".getMillisecond(), "time"=>getMillisecond(), "contentType"=>1];
+			
+			$roomChatDetail = Data::$globalData->roomChatDetail;
+			array_push($roomChatDetail[1]["chats"], $arr_insert);
+			
+			$arr_insert["id"] = array_search($arr_insert, $roomChatDetail[1]["chats"]);
+			$command = commandBuild(Commands::S_Chat_Details, [$arr_insert]);
+			Gateway::sendToGroup(1,$command);
+
+			Data::$globalData->roomChatDetail = $roomChatDetail;
+
+			echo "simulator\n";
+		});
 	}
 ?>

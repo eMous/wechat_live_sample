@@ -195,15 +195,22 @@ function wsTaskOnError(mess){
 }
 // -------- 包发送入口 --------
 
+// 直播间信息
 function roomInfo(roomId){
     console.log("roomInfo")
     var retCommand = util.commandBuild(com.Command.C_Detail_Room_Info, { roomId: roomId })
     send(retCommand)
 }
 
+// 进入直播间
 function enterRoom(roomId){
     console.log("enterRoom" + { roomId: roomId })
     var retCommand = util.commandBuild(com.Command.C_Enter_Room, { roomId: roomId })
+    send(retCommand)
+}
+// 获取更多的聊天数据
+function mooreChatDetail(chatId){
+    var retCommand = util.commandBuild(com.Command.C_More_Chat_Details, { roomId: 1, id: chatId })
     send(retCommand)
 }
 // -------- 具体数据包处理函数 -------- 
@@ -230,12 +237,15 @@ function onConnectDetailInfo(data) {
 function onRoomDetailInfo(data) {
     console.log(data)
     if (data.success == 1 || data.success == 2) {
+        // 浏览房间已经关闭，直播间不存在
+        if (data.roomIdSearched == wx.getStorageSync("inRoom")){
+            clearRoomCache()
+        }
         // 进入404
         wx.redirectTo({
             url: '/pages/notfound/notfound',
         })
     }
-
     if (data.success == -1){
         console.log(data.detailInfo)
         util.getPage("detail").setData(data.detailInfo)
@@ -260,10 +270,26 @@ function onChatDetails(data){
         console.log("no more data..")
         return
     }
+    var detail = util.getPage("detail").data.chatDetail;
+    console.log("detail" + detail)
     
-    var retCommand = util.commandBuild(com.Command.C_More_Chat_Details, { roomId: 1, id: data[0]["id"]})
-    send(retCommand)
+    var int_id = data[0]["id"];
+    for(var i = 0; i < data.length; i++){
+        var index = data[i]["id"];
+
+        console.log("set chatDetail" + data[i]["id"] + "=" + data[i])
+        detail[index] = data[i]
+        detail[index]["id"] = index;
+    }
+    console.log("data[0].id ====" + data[0].id);
+    util.getPage("detail").setData({ chatDetail: detail, toView: "a"+detail[int_id]["id"]})
 }
+
+function clearRoomCache(){
+    wx.removeStorageSync("inRoom")
+    wx.removeStorageSync("src")
+}
+
 module.exports = {
     onMessage: onMessage,
     reconnectWsTask: reconnectWsTask,

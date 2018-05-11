@@ -59,6 +59,7 @@ App({
                 console.log(util.logMessage("页面不带Room参数" + info.path, true))
             }else{
                 this.room = info.query.room
+                console.log("123456")
                 wx.setStorageSync('inRoom', this.room)
             }
         }else{

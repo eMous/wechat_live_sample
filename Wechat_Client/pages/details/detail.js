@@ -18,65 +18,38 @@ Page({
         isShowLoadingGif: false, // 是否显示loading的动画（卡的时候要）
         pauseButtonSrc: "/images/common/pauseButton.png",
         playButtonSrc: "/images/common/playButton.png",
-        live_src: "",
-        live:true,
+        live: true,
+        second_height: 0,
+
+        chatDetail: [
+            // { "system": true, "content": "4123", "time": 24124, "id":0 },
+            // { "uid": "anon", "content": "1", "contentType": 1, "time": 23123, "id":1  },
+            // { "uid": "xiaoming", "content": "2", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 2  },
+            // { "uid": "anon", "content": "3", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 3  },
+
+            // { "uid": "anon", "content": "4", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 4  },
+
+            // { "uid": "xiaoming", "content": "2", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 5  },
+            // { "uid": "anon", "content": "5", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 6  },
+
+            // { "uid": "anon", "content": "6", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 7  },
+
+            // { "uid": "anon", "content": "7", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 8  },
+
+        ],
         detail:
         {
-          imgUrl: util.ossAliyuncs + "/images/bg0.jpg",
-          title: "犯错-双管巴乌",
-          info: "小哥的声音真好。《一剪梅》改了这么多版，还是这版耐听。如泣如诉，余音袅袅。",
-          avatar: util.ossAliyuncs + "/images/banner4.jpg",
-          uName: "雨碎江南",
-          videoUrl: util.ossAliyuncs + "/videos/%E7%AD%89%E4%BD%A0%E7%AD%89%E4%BA%86%E9%82%A3%E4%B9%88%E4%B9%85.mp4",
-          browse: 4299,
-          like: 2113,
-          comment: 789,
-          time: "昨天"
+            imgUrl: util.ossAliyuncs + "/images/bg0.jpg",
+            title: "犯错-双管巴乌",
+            info: "小哥的声音真好。《一剪梅》改了这么多版，还是这版耐听。如泣如诉，余音袅袅。",
+            avatar: util.ossAliyuncs + "/images/banner4.jpg",
+            uName: "雨碎江南",
+            videoUrl: util.ossAliyuncs + "/videos/%E7%AD%89%E4%BD%A0%E7%AD%89%E4%BA%86%E9%82%A3%E4%B9%88%E4%B9%85.mp4",
+            browse: 4299,
+            like: 2113,
+            comment: 789,
+            time: "昨天"
         },
-        // comments: [
-        //   {
-        //     avatar: util.ossAliyuncs + "/images/banner4.jpg",
-        //     uName: "😝雨碎江南",
-        //     time: "2016-12-11",
-        //     content: "九九八十一难，最难过的，其实是女儿国这一关，因为比起其他的艰难困苦来说，此时的唐僧是真的动心了，一句“来生若有缘分”道尽一切，只是为了心中崇高的理想，纵使心动也要断绝柔情继续西行。为国王惋惜，同时也对唐僧充满崇敬，尤其是了解了史上真实的唐玄奘以后，更是觉得此人了不起。"
-        //   },
-        //   {
-        //     avatar: util.ossAliyuncs + "/images/banner6.jpg",
-        //     uName: "张珊珊",
-        //     time: "2016-12-11",
-        //     content: "音乐不分年纪，不过令人开心的是你们也不会年轻太久。😝😝😝😝"
-        //   },
-        //   {
-        //     avatar: util.ossAliyuncs + "/images/banner2.jpg",
-        //     uName: "麦田的守望者",
-        //     time: "2016-12-11",
-        //     content: "看的时候还很小，不太明白里面的故事，长大后才发现西游记里水太深了。😢😢😡😡😼😼🍆🍇🍇🍆👧👰👨💑💇💅🐶🐶🙏✈🚲🚲😡😅👿😖😨😢😻🚃🚃🚌"
-        //   },
-        //   {
-        //     avatar: util.ossAliyuncs + "/images/Screenshot_2016-12-13-10-13-16-926.png",
-        //     uName: "~LUCK",
-        //     time: "2016-12-11",
-        //     content: "86版《西游记》绝对是那代人的国民记忆，放假天天等着看，一遍又一遍，悟空被压在五指山下经历春夏秋冬，寒冬大雪里一个人吃雪，路过的小牧童送来水果，那一段我和小伙伴们哭的稀里哗啦，当年的特技后期制作还很落后，但所有演员都是用心在塑造角色，没有艳俗的服装造型，良心制作！ 以后会陪孩子再看"
-        //   },
-        //   {
-        //     avatar: util.ossAliyuncs + "/images/banner3.jpg",
-        //     uName: "沃德天·娜么帥",
-        //     time: "2016-12-11",
-        //     content: "想起，小时候，父亲教我这首歌的样子。"
-        //   },
-        //   {
-        //     avatar: util.ossAliyuncs + "/images/Screenshot_2016-12-13-10-13-38-305.png",
-        //     uName: "雨碎江南",
-        //     time: "2016-12-11",
-        //     content: "我的宿命，分两段， 未遇见你时，和遇见你以后。 你治好我的忧郁，而后赐我悲伤。 忧郁和悲伤之间的片刻欢喜， 透支了我生命全部的热情储蓄。 想饮一些酒，让灵魂失重，好被风吹走。 可一想到终将是你的路人， 便觉得，沦为整个世界的路人。 风虽大，都绕过我灵魂。"
-        //   },
-        //   {
-        //     avatar: util.ossAliyuncs + "/images/banner5.jpg",
-        //     uName: "雨碎江南",
-        //     time: "2016-12-01",
-        //     content: "九九八十一难，最难过的，其实是女儿国这一关，因为比起其他的艰难困苦来说，此时的唐僧是真的动心了，一句“来生若有缘分”道尽一切，只是为了心中崇高的理想，纵使心动也要断绝柔情继续西行。为国王惋惜，同时也对唐僧充满崇敬，尤其是了解了史上真实的唐玄奘以后，更是觉得此人了不起。"
-        //   }
-        // ],
         emojiChar: "☺-😋-😌-😍-😏-😜-😝-😞-😔-😪-😭-😁-😂-😃-😅-😆-👿-😒-😓-😔-😏-😖-😘-😚-😒-😡-😢-😣-😤-😢-😨-😳-😵-😷-😸-😻-😼-😽-😾-😿-🙊-🙋-🙏-✈-🚇-🚃-🚌-🍄-🍅-🍆-🍇-🍈-🍉-🍑-🍒-🍓-🐔-🐶-🐷-👦-👧-👱-👩-👰-👨-👲-👳-💃-💄-💅-💆-💇-🌹-💑-💓-💘-🚲",
         //0x1f---
         emoji: [
@@ -97,53 +70,73 @@ Page({
         alipayEmoji: [],//支付宝表情
         title: ''//页面标题
     },
+    tapLog: function () {
+        wx.navigateTo({ url: '../logs/logs' });
+    },
     play(e) {
         console.log("play!!!!!!!!!");
     },
     onLoad: function (options) {
-
-        // option : room, src, title
-        console.log
-        util.getPage("detail").setData(options)
-        
+        if (options.room == undefined) {
+            console.log(util.logMessage("room not defined by query"))
+        }
+        wx.setStorageSync("src", options.live_src)
         socketMatters.roomInfo(options.room)
-
+        
         // 页面初始化 options为页面跳转所带来的参数
-        var that = this,videoUrl = that.data.detail.videoUrl;
+        var that = this, videoUrl = that.data.detail.videoUrl;
         that.data.title = options.title;
-        switch(options.id){
+        switch (options.id) {
             case "0":
-            videoUrl = util.ossAliyuncs + "/videos/VID20161029121958.mp4"
-            break;
+                videoUrl = util.ossAliyuncs + "/videos/VID20161029121958.mp4"
+                break;
             case "1"://女儿情
-            videoUrl = util.ossAliyuncs + "/videos/%E5%A5%B3%E5%84%BF%E6%83%85.mp4"
-            break;
+                videoUrl = util.ossAliyuncs + "/videos/%E5%A5%B3%E5%84%BF%E6%83%85.mp4"
+                break;
             case "2"://犯错
-            videoUrl = util.ossAliyuncs + "/videos/%E7%8A%AF%E9%94%99-%E5%8F%8C%E7%AE%A1%E5%B7%B4%E4%B9%8C.mp4"
-            break;
+                videoUrl = util.ossAliyuncs + "/videos/%E7%8A%AF%E9%94%99-%E5%8F%8C%E7%AE%A1%E5%B7%B4%E4%B9%8C.mp4"
+                break;
             case "3"://车站
-            videoUrl = util.ossAliyuncs + "/videos/%E8%BD%A6%E7%AB%99-%E5%8F%8C%E7%AE%A1%E5%B7%B4%E4%B9%8C.mp4"
-            break;
+                videoUrl = util.ossAliyuncs + "/videos/%E8%BD%A6%E7%AB%99-%E5%8F%8C%E7%AE%A1%E5%B7%B4%E4%B9%8C.mp4"
+                break;
         }
         that.data.detail.videoUrl = videoUrl;
 
         var em = {}, that = this, emChar = that.data.emojiChar.split("-");
         var emojis = []
         that.data.emoji.forEach(function (v, i) {
-          em = {
-            char: emChar[i],
-            emoji: "0x1f" + v
-          };
-          emojis.push(em)
+            em = {
+                char: emChar[i],
+                emoji: "0x1f" + v
+            };
+            emojis.push(em)
         });
-           that.setData({
+        that.setData({
             emojis: emojis
-          })
+        })
         //alipayEmoji
         // for (var j = 1; j <= 121; j++) {
         //   if (j < 10) j = "0" + j;
         //   that.data.alipayEmoji.push("emotion_small_" + j)
         // }
+
+        var that = this
+        // 获取系统信息
+        wx.getSystemInfo({
+            success: function (res) {
+                console.log(res);
+                // 可使用窗口宽度、高度
+                console.log('height=' + res.windowHeight);
+                console.log('width=' + res.windowWidth);
+                // 计算主体部分高度,单位为px
+                that.setData({
+                    // second部分高度 = 利用窗口可使用高度 - first部分高度（这里的高度单位为px，所有利用比例将300rpx转换为px）
+                    second_height: res.windowHeight - 240 / 750 * 300
+                })
+            }
+        })
+
+        util.logMessage(this.data.live_src)
     },
     onReady: function () {
         // 页面渲染完成
@@ -154,8 +147,9 @@ Page({
 
         //获取直播组件上下文
         this.ctx = wx.createLivePlayerContext('detailLivePlayer');
-
-
+        
+        var src = wx.getStorageSync("src")
+        this.setData({ liveplayersrc:src});
     },
     onShow: function () {
         // 页面显示
@@ -320,6 +314,7 @@ Page({
 
     stateChange: function (e) {
 
+        util.logMessage("直播状态变化")
         switch (e.detail.code) {
             case 2001:
                 util.logMessage("已经连接服务器");
@@ -420,8 +415,6 @@ Page({
             })
         }
         util.logMessage("当前帧率是：" + currentFPS)
-        this.setData({
-        });
 
     }
 })

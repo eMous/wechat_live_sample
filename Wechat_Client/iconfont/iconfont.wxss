@@ -46,3 +46,40 @@
 .icon-xihuan:before { content: "\e6bd"; }
 
 .icon-liulan1:before { content: "\e67b"; }
+
+
+
+
+
+/* anon adds */
+.log{
+  position: fixed;
+  left: 5%
+}
+.menu {
+    position: fixed;
+    right: 5%;
+    bottom: 10%;
+    background-color: orangered;
+    color: #fff;
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.2)
+}
+.menu .iconfont {
+    font-size: 26px;
+    margin: 0
+}
+.iconfont {
+    margin-left: 15px;
+    font-size: 12px
+}
+.iconfont text {
+    color:#888;
+    margin-left: 3px
+}

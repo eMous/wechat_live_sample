@@ -40,6 +40,11 @@ function strAddTime(str){
 
 function logMessage(str,bIsWarning = false) {
   var logs = wx.getStorageSync('logs') || []
+  if(logs.length> 120){
+      wx.setStorageSync("logs", [])
+      wx.setStorageSync('isWarning', []);
+      logs = []
+  }
   logs.unshift(strAddTime(str))
   wx.setStorageSync('logs', logs)
 

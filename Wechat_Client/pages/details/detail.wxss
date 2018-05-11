@@ -235,9 +235,6 @@ video {
   animation: none;
 }
 
-.me-chat{
-    
-}
 
 @-webkit-keyframes emoji-move-in {
   0% {
@@ -298,3 +295,32 @@ video {
     padding-left: 15px;
   }
 }
+
+.chat-container{
+     /* position: relative; */
+     width: 100%;
+     height: 100%;
+     margin-bottom: 40px
+}
+.chat{
+    margin-top: 3.5px;
+    height: 40px;
+
+    display:flex;/*Flex布局*/
+    display: -webkit-flex; /* Safari */
+    align-items:center;/*指定垂直居中*/
+}
+.chat-content{
+}
+.chat-uid{
+}
+.system-message{
+    color:red
+}
+.inline-b{
+    display:inline-block
+}
+.chat-voice{
+}
+
+

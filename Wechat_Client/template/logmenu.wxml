@@ -1,0 +1,6 @@
+<!--悬浮日志菜单-->
+<template name="logmenu">
+    <view class="menu log">
+        <text class="iconfont icon-svg35" catchtap='tapLog'></text>
+    </view>
+</template>
