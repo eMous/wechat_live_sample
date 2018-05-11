@@ -20,7 +20,6 @@
         </view>
         <!-- 聊天列表 -->
         <scroll-view scroll-y style="height: {{second_height}}rpx;padding-bottom:20px" bindscrolltoupper="" bindscrolltolower="" bindscroll="" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-            <!-- <view class="chat-container"> -->
             <view class="chat touch-active" wx:if="{{c.contentType}}" id='a{{c.id}}' wx:for="{{chatDetail}}" wx:key="" wx:for-item="c">
                 <view class="system-message" wx:if="{{c.system == true}}">
                     系统消息：{{c.content}}
@@ -30,10 +29,9 @@
                 <view wx:if="{{c.contentType == 1}}" class="chat-content inline-b">{{c.content}}</view>
                 <!-- 语音 -->
                 <view wx:if="{{c.contentType == 2}}" class="chat-voice inline-b">
-                    <button type="default" style="display:inline-block" size="mini" bindtap="default" hover-class="other-button-hover"> default </button>
+                    <button type="default" style="display:inline-block" size="mini" bindtap="default" hover-class="other-button-hover"> {{c.voiceTime}}s </button>
                 </view>
             </view>
-            <!-- </view> -->
         </scroll-view>
     </view>
 

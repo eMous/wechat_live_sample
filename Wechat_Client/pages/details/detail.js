@@ -23,8 +23,8 @@ Page({
 
         // { "system": true, "content": "4123", "time": 24124, "id":0 },
         // { "uid": "anon", "content": "1", "contentType": 1, "time": 23123, "id":1  },
-        // { "uid": "xiaoming", "content": "2", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 2  },
-        chatDetail: [],
+        // { "uid": "xiaoming", "content": "2", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 2  },
+        chatDetail: [{ "uid": "xiaoming", "content": "2", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 2 },],
         detail:
         {
             imgUrl: util.ossAliyuncs + "/images/bg0.jpg",
