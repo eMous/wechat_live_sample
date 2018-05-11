@@ -1,5 +1,18 @@
 var ossAliyuncs = "http://soupu.oss-cn-shanghai.aliyuncs.com";
 
+function iGetInnerText(testStr) {
+
+    
+    var resultStr = testStr.replace(/\ +/g, ""); //去掉空格
+    console.log("去掉空格以后是"+resultStr)
+    resultStr = resultStr.replace(/[ ]/g, "");    //去掉空格
+    console.log("去掉空格以后是" + resultStr)
+    
+    resultStr = resultStr.replace(/[\r\n]/g, ""); //去掉回车换行
+    console.log("去掉回车换行以后是" + resultStr)
+    
+    return resultStr;
+}
 function dump_obj(myObject) {
     var s = "";
     for (var property in myObject) {
@@ -88,5 +101,6 @@ module.exports = {
   logMessage: logMessage,
   commandBuild: commandBuild,
   getPage: getPage,
-  dump_obj: dump_obj
+  dump_obj: dump_obj,
+  iGetInnerText: iGetInnerText
 }

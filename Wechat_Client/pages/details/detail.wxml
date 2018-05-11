@@ -19,7 +19,7 @@
             <image id="detailImg" wx:else class="i-img" src="{{detail.imgUrl}}"></image>
         </view>
         <!-- 聊天列表 -->
-        <scroll-view scroll-y style="height: {{second_height}}rpx;padding-bottom:20px" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+        <scroll-view scroll-y style="height: {{second_height}}rpx;padding-bottom:20px" bindscrolltoupper="" bindscrolltolower="" bindscroll="" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
             <!-- <view class="chat-container"> -->
             <view class="chat touch-active" wx:if="{{c.contentType}}" id='a{{c.id}}' wx:for="{{chatDetail}}" wx:key="" wx:for-item="c">
                 <view class="system-message" wx:if="{{c.system == true}}">
@@ -43,7 +43,7 @@
     <view class="comment-fixed" wx:if="{{!isFullScreen}}">
         <view class="cf-box">
             <view class="emoji iconfont icon-emoji" catchtap="emojiShowHide" style='display:none'></view>
-            <textarea  fixed="true" class="cf-content" bindfocus="textAreaFocus" maxlength="200" bindblur="textAreaBlur" auto-height value="{{content}}" placeholder="我要评论" cursor-spacing="50px" />
+            <textarea  fixed="true" class="cf-content" bindfocus="textAreaFocus" maxlength="30" bindblur="textAreaBlur" auto-height value="{{content}}" placeholder="我要评论" cursor-spacing="50px"/>
             <text class="cf-send touch-active" bindtap="send">发送</text>
         </view>
 

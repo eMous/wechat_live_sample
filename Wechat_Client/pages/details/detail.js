@@ -3,7 +3,7 @@ var socketMatters = require("../../utils/socketMatters")
 
 Page({
     data: {
-        isShow: false,//控制emoji表情是否显示
+        isShow: true,//控制emoji表情是否显示
         isLoad: true,//解决初试加载时emoji动画执行一次
         content: "",//评论框的内容
         isLoading: true,//是否显示加载数据提示
@@ -21,22 +21,10 @@ Page({
         live: true,
         second_height: 0,
 
-        chatDetail: [
-            // { "system": true, "content": "4123", "time": 24124, "id":0 },
-            // { "uid": "anon", "content": "1", "contentType": 1, "time": 23123, "id":1  },
-            // { "uid": "xiaoming", "content": "2", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 2  },
-            // { "uid": "anon", "content": "3", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 3  },
-
-            // { "uid": "anon", "content": "4", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 4  },
-
-            // { "uid": "xiaoming", "content": "2", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 5  },
-            // { "uid": "anon", "content": "5", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 6  },
-
-            // { "uid": "anon", "content": "6", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 7  },
-
-            // { "uid": "anon", "content": "7", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 8  },
-
-        ],
+        // { "system": true, "content": "4123", "time": 24124, "id":0 },
+        // { "uid": "anon", "content": "1", "contentType": 1, "time": 23123, "id":1  },
+        // { "uid": "xiaoming", "content": "2", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 2  },
+        chatDetail: [],
         detail:
         {
             imgUrl: util.ossAliyuncs + "/images/bg0.jpg",
@@ -82,7 +70,7 @@ Page({
         }
         wx.setStorageSync("src", options.live_src)
         socketMatters.roomInfo(options.room)
-        
+
         // 页面初始化 options为页面跳转所带来的参数
         var that = this, videoUrl = that.data.detail.videoUrl;
         that.data.title = options.title;
@@ -147,9 +135,9 @@ Page({
 
         //获取直播组件上下文
         this.ctx = wx.createLivePlayerContext('detailLivePlayer');
-        
+
         var src = wx.getStorageSync("src")
-        this.setData({ liveplayersrc:src});
+        this.setData({ liveplayersrc: src });
     },
     onShow: function () {
         // 页面显示
@@ -195,7 +183,7 @@ Page({
     //文本域失去焦点时 事件处理
     textAreaBlur: function (e) {
         //获取此时文本域值
-        console.log(e.detail.value)
+        console.log("获取此时文本域值"+e.detail.value)
         this.setData({
             content: e.detail.value
         })
@@ -235,10 +223,15 @@ Page({
         var that = this, conArr = [];
         //此处延迟的原因是 在点发送时 先执行失去文本焦点 再执行的send 事件 此时获取数据不正确 故手动延迟100毫秒
         setTimeout(function () {
-            if (that.data.content.trim().length > 0) {
-                socketMatters.chatMessageSend(that.data.content, wx.getStorageSync("inRoom"));
-            }
-            that.setData({content:""})
+            console.log(that.data.content)
+
+            let content = that.data.content
+            console.log("now content = " + content)
+            let new_content = util.iGetInnerText(content)
+            console.log("now content = " + new_content)
+            
+            socketMatters.chatMessageSend(new_content, wx.getStorageSync("inRoom"));
+            that.setData({ content: "" })
         }, 100)
     },
 
@@ -402,5 +395,5 @@ Page({
         }
         util.logMessage("当前帧率是：" + currentFPS)
 
-    }
+    },
 })
