@@ -270,7 +270,7 @@
 		$uid = $_SESSION['uid'];
 		$globalData = Data::$globalData;
 		$roomId = $data["roomId"];
-
+		var_dump($data);
 		// 房间不存在
 		if(!array_key_exists($roomId, $globalData->roomInfo)){
 			echo "no such a live room. $roomId \n";
@@ -289,6 +289,8 @@
 			return;
 		}
 
+		echo("onClientChat!!! \n");
+		var_dump($data);
 		// 添加记录
 		$arr = ["uid"=>$uid, "content"=>$data["content"], "time"=>getMillisecond(), "contentType"=>$data["contentType"]];
 		if($data["contentType"] == 2)
@@ -297,7 +299,7 @@
 		$roomChatDetail[$roomId]["chats"][] = $arr;
 		$globalData->roomChatDetail = $roomChatDetail;
 
-		$arr["id"] = array_search($arr, $targetRoomChatDetail["chats"]);
+		$arr["id"] = array_search($arr, $roomChatDetail[$roomId]["chats"]);
 		$command = commandBuild(Commands::S_Chat_Details, [$arr]);
 		Gateway::sendToGroup($roomId,$command);
 	}

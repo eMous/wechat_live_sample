@@ -230,29 +230,15 @@ Page({
             cfBg: false
         })
     },
-    //发送评论评论 事件处理
+    //发送文字聊天 事件处理
     send: function () {
         var that = this, conArr = [];
         //此处延迟的原因是 在点发送时 先执行失去文本焦点 再执行的send 事件 此时获取数据不正确 故手动延迟100毫秒
         setTimeout(function () {
             if (that.data.content.trim().length > 0) {
-                conArr.push({
-                    avatar: util.ossAliyuncs + "/images/banner5.jpg",
-                    uName: "雨碎江南",
-                    time: util.formatTime(new Date()),
-                    content: that.data.content
-                })
-                that.setData({
-                    comments: that.data.comments.concat(conArr),
-                    content: "",//清空文本域值
-                    isShow: false,
-                    cfBg: false
-                })
-            } else {
-                that.setData({
-                    content: ""//清空文本域值
-                })
+                socketMatters.chatMessageSend(that.data.content, wx.getStorageSync("inRoom"));
             }
+            that.setData({content:""})
         }, 100)
     },
 

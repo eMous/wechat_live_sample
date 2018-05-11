@@ -58,7 +58,7 @@
    		const S_Enter_Room_Response = -4;
       
       /*
-      * DATA: {roomId:..,uid:..,content:..,time:..,contentType..,voiceTime..}
+      * DATA: {roomId:..,content:..,time:..,contentType..,voiceTime..}
       */
       const C_Chat = 5;
       /*
