@@ -24,7 +24,7 @@ class Server
      * @param string $ip
      * @param int $port
      */
-    public function __construct($ip = '0.0.0.0', $port = 2207)
+    public function __construct($ip = '0.0.0.0', $port = 2307)
     {
         $worker = new Worker("frame://$ip:$port");
         $worker->count = 1;

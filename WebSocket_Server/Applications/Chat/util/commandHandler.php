@@ -9,7 +9,7 @@
 		// debug
 		echo("gateway start .. \n");
 
-		$globalData = new GlobalDataClient('127.0.0.1:2207');
+		$globalData = new GlobalDataClient('127.0.0.1:2307');
 		if(isset($globalData->ossAliyuncs ))
 			return;
 		$globalData->ossAliyuncs = "http://soupu.oss-cn-shanghai.aliyuncs.com";
@@ -90,7 +90,7 @@
 
 		// debug
 		echo("business worker start ..\n");
-		Data::$globalData = new GlobalDataClient('127.0.0.1:2207');
+		Data::$globalData = new GlobalDataClient('127.0.0.1:2307');
 	}
 	class Data{
 		public static $globalData;
@@ -149,6 +149,20 @@
 	// -------- 具体数据包处理函数 -------- 
 
 	function onConnectRequestInfo($client_id, $data){
+		
+		// 如果是获取到了登录信息,则移出之前的 未注册id
+		if(isset($_SESSION["uid"])){
+		    echo("connection set uid and it is " . $_SESSION["uid"]  . "\n");
+			if(isset($_SESSION["roomId"])){
+                echo("connection set roomid and it is " . $_SESSION["roomId"]  . "\n");
+				$roomId = $_SESSION["roomId"];
+				// 如果他在房间之前，就把之前在房间未注册id移出，再把现在的id加进去
+				onLeaveRoom($client_id);
+				onEnterRoom($client_id,["roomId"=>$roomId]);
+			}
+
+		}
+
 		$uid = $data["id"];
 
 		Gateway::bindUid($client_id, $uid);
@@ -186,27 +200,35 @@
 		Gateway::sendToCurrentClient($commandSend);
 	}
 
-	function onLeaveRoom($client, $data = null){
-		
-		// 清除服务器历史里的房间的记录，同时一个人只能在一个直播间内
+	function onLeaveRoom($client_id, $data = null){
+	    if(!isset($_SESSION["uid"])){
+            return;
+        }
+		$uid = $_SESSION["uid"];
+        $globalData = Data::$globalData;
+
+	    // 清除服务器历史里的房间的记录，同时一个人只能在一个直播间内
 		if(isset($_SESSION["roomId"])){
-			$pre_room_id = $_SESSION["roomId"];
+            echo("onLeaveRoom\n");
+		    $pre_room_id = $_SESSION["roomId"];
 			if(isset($globalData->roomChatDetail[$pre_room_id])){
-				$key = array_search($uid, $globalData->roomChatDetail[$pre_room_id]);
+				$key = array_search($uid, $globalData->roomChatDetail[$pre_room_id]["online_uids"]);
 				if($key != false){
-					unset($globalData->roomChatDetail[$pre_room_id][$key]);
+					unset($globalData->roomChatDetail[$pre_room_id]["online_uids"][$key]);
 				}
 			}
 			Gateway::leaveGroup($client_id,$pre_room_id);
+			unset($_SESSION["roomId"]);
 		}
 
 		// 清除指定的
 		if (isset($data["roomId"])) {
-			$roomId = $data["roomId"];
+            echo("onLeaveRoom\n");
+		    $roomId = $data["roomId"];
 			if (isset($globalData->roomChatDetail[$roomId])) {
-				$key = array_search($uid, $globalData->roomChatDetail[$roomId]);
+				$key = array_search($uid, $globalData->roomChatDetail[$roomId]["online_uids"]);
 				if($key != false){
-					unset($globalData->roomChatDetail[$roomId][$key]);
+					unset($globalData->roomChatDetail[$roomId]["online_uids"][$key]);
 				}
 			}
 			Gateway::leaveGroup($client_id,$roomId);
@@ -246,6 +268,7 @@
 
 			// 如果已经加入直播间，直接返回				
 			Gateway::joinGroup($client_id,$roomId);
+			$_SESSION["roomId"] = $roomId;
 			if (in_array("$uid", $targetRoomChatDetail["online_uids"])) {
 				echo("$uid already add in the live room \n");
 				return;

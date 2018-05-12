@@ -65,11 +65,18 @@ Page({
         console.log("play!!!!!!!!!");
     },
     onLoad: function (options) {
-        if (options.room == undefined) {
-            console.log(util.logMessage("room not defined by query"))
+        // 参数已经被 app.js 捕获过了，不重复获取，并且如果是后台打开的话是没有参数的，直接读本地缓存。
+        let room = wx.getStorageSync("inRoom")
+        let src = wx.getStorageSync("src")
+
+        if (room == undefined) {
+            console.log(util.logMessage("room not defined by query",true))
         }
-        wx.setStorageSync("src", options.live_src)
-        socketMatters.roomInfo(options.room)
+        if (src == undefined)
+        {
+          console.log(util.logMessage("src not defined by query",true))
+        }
+        socketMatters.roomInfo(room)
 
         // 页面初始化 options为页面跳转所带来的参数
         var that = this, videoUrl = that.data.detail.videoUrl;
@@ -127,6 +134,11 @@ Page({
         util.logMessage(this.data.live_src)
     },
     onReady: function () {
+
+        let info  = wx.getStorageSync("userinfo")
+        if(info != undefined)
+          this.setData({ nickName: info.nickName})
+
         // 页面渲染完成
         //设置当前标题
         wx.setNavigationBarTitle({
@@ -140,10 +152,11 @@ Page({
         this.setData({ liveplayersrc: src });
     },
     onShow: function () {
-        // 页面显示
+   
     },
     onHide: function () {
         // 页面隐藏
+       
     },
     onUnload: function () {
         // 页面关闭
@@ -166,7 +179,7 @@ Page({
             //模拟网络加载
             setTimeout(function () {
                 that.setData({
-                    comments: that.data.comments.concat(conArr)
+                    //comments: that.data.comments.concat(conArr)
                 })
             }, 1000)
         } else {
@@ -183,7 +196,7 @@ Page({
     //文本域失去焦点时 事件处理
     textAreaBlur: function (e) {
         //获取此时文本域值
-        console.log("获取此时文本域值"+e.detail.value)
+        console.log("获取此时文本域值" + e.detail.value)
         this.setData({
             content: e.detail.value
         })
@@ -229,7 +242,7 @@ Page({
             console.log("now content = " + content)
             let new_content = util.iGetInnerText(content)
             console.log("now content = " + new_content)
-            
+
             socketMatters.chatMessageSend(new_content, wx.getStorageSync("inRoom"));
             that.setData({ content: "" })
         }, 100)
@@ -396,4 +409,14 @@ Page({
         util.logMessage("当前帧率是：" + currentFPS)
 
     },
+
+    userInfoHandler: function (e
+    ) {
+        let obj = e.detail
+        console.log(obj.userInfo.nickName)
+        let app = getApp()
+        app.userinfo = obj.userInfo
+        wx.setStorageSync("userinfo", app.userinfo)
+        socketMatters.businessReconnect()
+    }
 })

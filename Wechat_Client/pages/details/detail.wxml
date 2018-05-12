@@ -1,6 +1,7 @@
 <!--引入加载更多模版-->
 <import src="../../template/loading" />
 
+<button open-type="getUserInfo" bindgetuserinfo="userInfoHandler"> 授权获取用户信息 </button>
 <!--详情页-->
 <view class="container">
     <view class="c-top">
@@ -24,7 +25,7 @@
                 <view class="system-message" wx:if="{{c.system == true}}">
                     系统消息：{{c.content}}
                 </view>
-                <view wx:else class="chat-uid inline-b" style="color:{{c.uid == 'anon'? 'blue' : 'grey'}}">{{c.uid}}:</view>
+                <view wx:else class="chat-uid inline-b" style="color:{{c.uid == nickName ? 'blue' : 'grey'}}">{{c.uid}}:</view>
                 <!-- 文字 -->
                 <view wx:if="{{c.contentType == 1}}" class="chat-content inline-b">{{c.content}}</view>
                 <!-- 语音 -->
