@@ -247,7 +247,9 @@ function onConnectDetailInfo(data) {
     app.reconnectMessageQueqe = []
 
     // 断线重连成功回调
-    // ...
+    let room = wx.getStorageSync("inRoom")
+    if(room)
+      enterRoom(room)
 }
 function onRoomDetailInfo(data) {
     console.log(data)

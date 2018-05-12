@@ -417,6 +417,14 @@ Page({
         let app = getApp()
         app.userinfo = obj.userInfo
         wx.setStorageSync("userinfo", app.userinfo)
+        // 先把旧的UID洗掉
         socketMatters.businessReconnect()
+
+        let room = wx.getStorageSync("inRoom")
+        if (room)
+          setTimeout(function () { 
+            socketMatters.enterRoom(room)
+            console.log(util.logMessage("获取用户信息后,刷新服务端的uid,先让之前的uid退出房间,再让这个uid进入房间"))
+          },200)
     }
 })

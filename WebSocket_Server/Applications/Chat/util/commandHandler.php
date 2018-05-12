@@ -286,7 +286,7 @@
 			}
 			
 		}
-		//test();
+		test();
 	}
 
 	function onChat($client_id,$data){
@@ -373,10 +373,16 @@
 	}
 
 	function test(){
-			$timer_id = \Workerman\Lib\Timer::add(2, function()use(&$timer_id){
-			Data::$globalData->chatTimer = $timer_id;
+			$timer_id = \Workerman\Lib\Timer::add(6.5, function()use(&$timer_id){
+                if(isset(Data::$globalData->chatTimer))
+                    return;
+			    Data::$globalData->chatTimer = $timer_id;
 
-			$arr_insert = ["uid"=>rand(0,5) > 2 ? "anon" : "simulator", "content"=>"test".getMillisecond(), "time"=>getMillisecond(), "contentType"=>1];
+			$uid= "simulator";
+			if (rand(0,5) > 2)
+                $uid="bealiar";
+
+			$arr_insert = ["uid"=>rand(0,5) > 2 ? "{}" :$uid, "content"=>"test".getMillisecond(), "time"=>getMillisecond(), "contentType"=>1];
 			
 			$roomChatDetail = Data::$globalData->roomChatDetail;
 			array_push($roomChatDetail[1]["chats"], $arr_insert);
