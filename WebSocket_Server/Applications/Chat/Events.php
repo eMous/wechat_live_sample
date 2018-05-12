@@ -137,6 +137,8 @@ class Events
     */
    public static function onClose($client_id)
    {
+        
+        handleClose($client_id);
        // debug
        echo "client:{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} gateway:{$_SERVER['GATEWAY_ADDR']}:{$_SERVER['GATEWAY_PORT']}  client_id:$client_id onClose:''\n";
        

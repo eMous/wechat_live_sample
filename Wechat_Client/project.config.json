@@ -37,8 +37,23 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": -1,
-			"list": []
+			"current": 0,
+			"list": [
+				{
+					"id": 0,
+					"name": "长按二维码",
+					"pathName": "pages/details/detail",
+					"query": "room=1&live_src=rtmp://live.hkstv.hk.lxdns.com/live/hks",
+					"scene": "1012"
+				},
+				{
+					"id": 1,
+					"name": "长按二维码",
+					"pathName": "pages/details/detail",
+					"query": "room=1&live_src=rtmp://2552.liveplay.myqcloud.com/live/2552_e21b5b87b6be11e69776e435c87f075e",
+					"scene": "1012"
+				}
+			]
 		}
 	}
 }
