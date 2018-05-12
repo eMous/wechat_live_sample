@@ -3,7 +3,7 @@ var util = require("utils/util")
 var socketMatters = require("utils/socketMatters.js")
 
 App({
-    url: "wss://127.0.0.1:7272",
+    url: "ws://120.24.241.6:7272",
     wsTaskFailed: true,
     lastPingPongTime: null,
     isConnecting : false,
