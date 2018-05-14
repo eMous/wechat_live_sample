@@ -318,4 +318,11 @@ video {
 .chat-voice{
 }
 
+.recorder-button{
+  display: inline;
+  position: fixed;
+  bottom: 70px;
+  right: 20px;
+}
+
 

@@ -21,8 +21,8 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 // 证书最好是申请的证书
 $context = array(
     'ssl' => array(
-        'local_cert'  => 'C:/Users/Administrator/Desktop/openssl-0.9.8k_WIN32/bin/server.crt', // 也可以是crt文件
-        'local_pk'    => 'C:/Users/Administrator/Desktop/openssl-0.9.8k_WIN32/bin/server_no_passwd.key',
+        'local_cert'  => '/etc/apache2/cert/public.pem', // 也可以是crt文件
+        'local_pk'    => '/etc/apache2/cert/214675772330006.key',
         'verify_peer' => false,
     )
 );

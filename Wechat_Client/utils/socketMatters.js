@@ -73,8 +73,15 @@ function businessReconnect() {
     var wsTask = app.wsTask
 
     console.log("businessReconnect")
+
+    let name = "unknown" + Date.parse(new Date())
+
+    let info = wx.getStorageSync("userinfo")
+    console.log("app.userInfo == " + info)
+    if (info)
+      name = info.nickName
     // ID 绑定
-    var ret = util.commandBuild(com.Command.C_Busniess_Reconnect, { id: "anon" })
+    var ret = util.commandBuild(com.Command.C_Busniess_Reconnect, { id: name })
     send(ret)
 
 }
@@ -186,11 +193,14 @@ function wsTaskOnError(mess) {
     app.wsTaskFailed = true;
     app.isConnecting = false
     app.lastPingPongTime = Date.parse(new Date()) + 15000
-    util.logMessage("onwsTask.onError:" + mess, true)
+    util.logMessage("onwsTask.onError:" + mess.errMsg, true)
     console.log("onwsTask.onError:" + mess, true)
 
     console.log("从连接失败处，重新建立连接")
-    reconnectWsTask();
+    setTimeout(function(){
+      reconnectWsTask()
+    },500)
+
 }
 // -------- 包发送入口 --------
 
@@ -237,7 +247,9 @@ function onConnectDetailInfo(data) {
     app.reconnectMessageQueqe = []
 
     // 断线重连成功回调
-    // ...
+    let room = wx.getStorageSync("inRoom")
+    if(room)
+      enterRoom(room)
 }
 function onRoomDetailInfo(data) {
     console.log(data)
@@ -300,5 +312,6 @@ module.exports = {
     reconnectWsTask: reconnectWsTask,
     startPingPong: startPingPong,
     roomInfo: roomInfo,
-    chatMessageSend: chatMessageSend
+    chatMessageSend: chatMessageSend,
+    businessReconnect: businessReconnect 
 }

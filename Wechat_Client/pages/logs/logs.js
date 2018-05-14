@@ -20,6 +20,8 @@ Page({
       logs: (wx.getStorageSync('logs') || []),
       isWarning: (wx.getStorageSync('isWarning') || [])
     });
+
+    wx.clear
   }
 
 
