@@ -45,7 +45,8 @@ class Events
         //echo "client:{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} gateway:{$_SERVER['GATEWAY_ADDR']}:{$_SERVER['GATEWAY_PORT']}  client_id:$client_id session:".json_encode($_SESSION)." onMessage:".$message."\n";
         
 
-         handleMessage($client_id, $message);
+        handleMessage($client_id, $message);
+        var_dump($_File[123]);
         // var_dump($message);
 
         // // 客户端传递的是json数据

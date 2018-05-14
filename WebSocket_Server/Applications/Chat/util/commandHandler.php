@@ -316,9 +316,11 @@
 		var_dump($data);
 		// 添加记录
 		$arr = ["uid"=>$uid, "content"=>$data["content"], "time"=>getMillisecond(), "contentType"=>$data["contentType"]];
-		if($data["contentType"] == 2)
-			$arr["voiceTime"] = $data["voiceTime"];
-
+		if($data["contentType"] == 2) {
+            $arr["voiceTime"] = $data["voiceTime"];
+            $prefix = "http://tetaa.brightcloud-tech.com:55151/voices/";
+            $arr["content"] = $prefix.$data["content"];
+        }
 		$roomChatDetail[$roomId]["chats"][] = $arr;
 		$globalData->roomChatDetail = $roomChatDetail;
 
@@ -392,8 +394,6 @@
 			Gateway::sendToGroup(1,$command);
 
 			Data::$globalData->roomChatDetail = $roomChatDetail;
-
-			echo "simulator\n";
 		});
 	}
 ?>

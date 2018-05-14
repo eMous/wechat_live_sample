@@ -30,7 +30,7 @@
                 <view wx:if="{{c.contentType == 1}}" class="chat-content inline-b">{{c.content}}</view>
                 <!-- 语音 -->
                 <view wx:if="{{c.contentType == 2}}" class="chat-voice inline-b">
-                    <button type="default" style="display:inline-block" size="mini" bindtap="default" hover-class="other-button-hover"> {{c.voiceTime}}s </button>
+                    <button type="default" style="display:inline-block" size="mini" bindtap="tapDetailVoicePlay" hover-class="other-button-hover" data-url="{{c.content}}"> {{c.voiceTime}}s </button>
                 </view>
             </view>
         </scroll-view>
@@ -61,5 +61,6 @@
     <import src="../../template/logmenu" />
     <template is="logmenu" />
 
-    <button class='recorder-button'>开始录音</button>
+    <button class='recorder-button' loading="{{isRecording}}" 
+    bindtouchstart="startRecord" bindtouchcancel="endRecord" bindtouchend="endRecord">开始录音</button>
 </view>

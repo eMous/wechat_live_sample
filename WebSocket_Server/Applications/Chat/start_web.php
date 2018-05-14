@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * This file is part of workerman.
  *
@@ -20,13 +20,21 @@ use \Workerman\Autoloader;
 
 // 自动加载类
 require_once __DIR__ . '/../../vendor/autoload.php';
-
+// 证书最好是申请的证书
+$context = array(
+    'ssl' => array(
+        'local_cert'  => '/etc/apache2/cert/public.pem', // 也可以是crt文件
+        'local_pk'    => '/etc/apache2/cert/214675772330006.key',
+        'verify_peer' => false,
+    )
+);
 // WebServer
-$web = new WebServer("http://0.0.0.0:55151");
+$web = new WebServer("http://0.0.0.0:55151",$context);
+$web->transport = 'ssl';
 // WebServer数量
 $web->count = 2;
 // 设置站点根目录
-$web->addRoot('www.your_domain.com', __DIR__.'/Web');
+$web->addRoot('tetaa.brightcloud-tech.com', __DIR__.'/Web');
 
 // 如果不是在根目录启动，则运行runAll方法
 if(!defined('GLOBAL_START'))
