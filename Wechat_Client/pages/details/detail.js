@@ -146,8 +146,9 @@ Page({
         })
 
         //获取直播组件上下文
-        this.ctx = wx.createLivePlayerContext('detailLivePlayer');
-
+        this.ctx = wx.createLivePlayerContext('detailLivePlayer')
+        // 录音管理器
+        this.recorderManager = wx.getRecorderManager()
         var src = wx.getStorageSync("src")
         this.setData({ liveplayersrc: src });
     },

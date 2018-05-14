@@ -60,4 +60,6 @@
 
     <import src="../../template/logmenu" />
     <template is="logmenu" />
+
+    <button class='recorder-button'>开始录音</button>
 </view>
