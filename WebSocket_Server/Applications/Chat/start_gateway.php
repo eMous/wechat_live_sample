@@ -27,8 +27,8 @@ $context = array(
     )
 );
 // gateway 进程
-$gateway = new Gateway("Websocket://0.0.0.0:7272",$context);
-$gateway->transport = 'ssl';
+$gateway = new Gateway("Websocket://127.0.0.1:7272");
+//$gateway->transport = 'ssl';
 // 设置名称，方便status时查看
 $gateway->name = 'ChatGateway';
 // 设置进程数，gateway进程数建议与cpu核数相同

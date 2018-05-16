@@ -3,7 +3,7 @@ var util = require("utils/util")
 var socketMatters = require("utils/socketMatters.js")
 
 App({
-  url: "wss://tetaa.brightcloud-tech.com:7272",
+  url: "wss://tetaa.brightcloud-tech.com/wss",
   wsTaskFailed: true,
   lastPingPongTime: null,
   isConnecting: false,
