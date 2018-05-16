@@ -83,7 +83,6 @@ function businessReconnect() {
   // ID 绑定
   var ret = util.commandBuild(com.Command.C_Busniess_Reconnect, { id: name })
   send(ret)
-
 }
 
 // 包装带failLog的Send函数

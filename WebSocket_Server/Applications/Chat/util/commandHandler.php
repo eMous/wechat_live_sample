@@ -152,15 +152,9 @@
 		
 		// 如果是获取到了登录信息,则移出之前的 未注册id
 		if(isset($_SESSION["uid"])){
-		    echo("connection set uid and it is " . $_SESSION["uid"]  . "\n");
-			if(isset($_SESSION["roomId"])){
-                echo("connection set roomid and it is " . $_SESSION["roomId"]  . "\n");
-				$roomId = $_SESSION["roomId"];
-				// 如果他在房间之前，就把之前在房间未注册id移出，再把现在的id加进去
-				onLeaveRoom($client_id);
-				onEnterRoom($client_id,["roomId"=>$roomId]);
-			}
-
+		    echo("reset uid and it is " . $_SESSION["uid"]  . "\n");
+		    Gateway::unbindUid($client_id,$_SESSION["uid"]);
+			onLeaveRoom($client_id);
 		}
 
 		$uid = $data["id"];
@@ -213,8 +207,18 @@
 		    $pre_room_id = $_SESSION["roomId"];
 			if(isset($globalData->roomChatDetail[$pre_room_id])){
 				$key = array_search($uid, $globalData->roomChatDetail[$pre_room_id]["online_uids"]);
-				if($key != false){
-					unset($globalData->roomChatDetail[$pre_room_id]["online_uids"][$key]);
+
+				echo ("room $pre_room_id  online_uids's structure is \n");
+				if(!is_bool($key))
+                {
+				    echo ("pre_room_id == $pre_room_id, key == $key\n");
+
+				    $roomDetail = $globalData->roomChatDetail;
+				    $uids = &$roomDetail[$pre_room_id]["online_uids"];
+                    unset($uids[$key]);
+                    $globalData->roomChatDetail = $roomDetail;
+
+                    var_dump( $roomDetail[$pre_room_id]["online_uids"]);
 				}
 			}
 			Gateway::leaveGroup($client_id,$pre_room_id);
@@ -313,12 +317,11 @@
 		}
 
 		echo("onClientChat!!! \n");
-		var_dump($data);
 		// 添加记录
 		$arr = ["uid"=>$uid, "content"=>$data["content"], "time"=>getMillisecond(), "contentType"=>$data["contentType"]];
 		if($data["contentType"] == 2) {
             $arr["voiceTime"] = $data["voiceTime"];
-            $prefix = "http://tetaa.brightcloud-tech.com:55151/voices/";
+            $prefix = "https://tetaa.brightcloud-tech.com/voices/";
             $arr["content"] = $prefix.$data["content"];
         }
 		$roomChatDetail[$roomId]["chats"][] = $arr;
@@ -327,7 +330,9 @@
 		$arr["id"] = array_search($arr, $roomChatDetail[$roomId]["chats"]);
 		$command = commandBuild(Commands::S_Chat_Details, [$arr]);
 		Gateway::sendToGroup($roomId,$command);
-	}
+        var_dump($command);
+
+    }
 
 
 	// 返回id之前的5条消息

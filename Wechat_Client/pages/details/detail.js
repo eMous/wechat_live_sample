@@ -163,27 +163,30 @@ Page({
       console.log(util.logMessage("结束录音"))
 
       let endRecordTime = Date.parse(new Date())
-      let duration = (endRecordTime - that.data.startRecordTime)/1000
+      let duration = (endRecordTime - that.data.startRecordTime) / 1000
       that.data.startRecordTime = 0
 
       let tempFilePath = res.tempFilePath
+      console.log("tempFilePath ===" + tempFilePath)
+      let fileName = tempFilePath.split("/").pop()
+      console.log("fileName ===" + fileName)
 
       wx.uploadFile({
-        url: "https://tetaa.brightcloud-tech.com:55151/uploadVoice.php",
+        url: "https://tetaa.brightcloud-tech.com/uploadVoice.php",
         filePath: tempFilePath,
         success: function (res) {
-          console.log("path ==" + tempFilePath)
-          let fileName = tempFilePath.split("//")[1]
+
           console.log("success upload file,data =" + res.data + " code = " + res.statusCode)
           console.log("innerAudioContext.duration =" + duration)
           socketMatters.sendVoice(wx.getStorageSync("inRoom"), fileName, duration)
         },
         fail: function () { console.log("fail upload file") },
-        name: tempFilePath
+        name: fileName
       })
     })
 
     var src = wx.getStorageSync("src")
+    console.log("src ====" + src)
     this.setData({ liveplayersrc: src });
   },
   onShow: function () {
@@ -196,6 +199,24 @@ Page({
   onUnload: function () {
     // 页面关闭
   },
+
+  // 下拉刷新
+  onPullDownRefresh: function () {
+    let roomId = wx.getStorageSync("inRoom")
+    if (!roomId) {
+      console.log(util.logMessage("缓存中没有房间信息", true));
+      wx.redirectTo({
+        url: '/pages/notfound/notfound',
+      })
+    }
+
+    console.log(util.logMessage("下拉刷新，重新连接获取，通过本地ID和ROOM进入房间"));
+    socketMatters.businessReconnect()
+    this.ctx.stop({ sucess: function () { console.log("抢救无效手动停止成功") }, fail: function () { console.log("抢救无效手动停止失败") } });
+    this.ctx.play({ sucess: function () { console.log("抢救无效手动开启成功") }, fail: function () { console.log("抢救无效手动开启失败") } });
+    wx.stopPullDownRefresh()
+  },
+
   //上拉加载
   onReachBottom: function () {
     var conArr = [], that = this;
@@ -377,7 +398,8 @@ Page({
         util.logMessage("视频分辨率改变", true);
         break;
       case -2301:
-        util.logMessage("网络断连，且经多次重连抢救无效，更多重试请自行重启播放", true);
+        util.logMessage("网络断连，且经多次重连抢救无效，更多重试请自行重启播放,调用下拉刷新", true);
+        this.onPullDownRefresh()
         break;
       case -2302:
         util.logMessage("获取加速拉流地址失败", true);
@@ -476,16 +498,18 @@ Page({
         }
       }
     )
-
-
-
   },
   endRecord: function (e) {
     this.recorderManager.stop()
   },
   tapDetailVoicePlay: function (e) {
     console.log("tapDetailVoicePlay")
+    console.log("url=====" + e.currentTarget.dataset.url)
     this.innerAudioContext.src = e.currentTarget.dataset.url
     this.innerAudioContext.play()
+    this.innerAudioContext.onError((res) => {
+      console.log(res.errMsg)
+      console.log(res.errCode)
+    })
   }
 })

@@ -46,7 +46,7 @@ class Events
         
 
         handleMessage($client_id, $message);
-        var_dump($_File[123]);
+        //var_dump($_File[123]);
         // var_dump($message);
 
         // // 客户端传递的是json数据
