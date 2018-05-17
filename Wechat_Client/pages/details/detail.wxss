@@ -24,31 +24,37 @@ video {
   width: 100%;
   height: 100%;
 }
-.tap-cover{
+
+.tap-cover {
   width: 100%;
   height: 100%;
 }
-.loading-pic{
+
+.loading-pic {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform:translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   height: 30px;
   width: 30px;
 }
-.bar-container{
+
+.bar-container {
   position: absolute;
   width: 100%;
   height: 100%;
   background: yellow;
-  flex-direction:row;
+  flex-direction: row;
 }
-.stopButton{
-   position: absolute; 
+
+.stopButton {
+  position: absolute;
 }
-.fullScreenButton{
-   position: absolute; 
+
+.fullScreenButton {
+  position: absolute;
 }
+
 .t-info {
   background-color: #fff;
   padding: 8px 15px;
@@ -64,6 +70,7 @@ video {
   padding: 0 15px 8px 15px;
   color: #888;
 }
+
 .ti-content {
   border-top: 1px solid #f2f2f2;
   border-bottom: 1px solid #f2f2f2;
@@ -71,18 +78,22 @@ video {
   margin: 0 -15px 10px -15px;
   font-size: 14px;
 }
+
 .ti-bottom {
   display: flex;
-  justify-content: space-between
+  justify-content: space-between;
 }
+
 .ti-bottom .c-u-img {
   width: 23px;
   height: 23px;
 }
+
 .t-info .iconfont {
   vertical-align: middle;
   margin-right: 5px;
 }
+
 .comments {
   margin-top: 10px;
 }
@@ -148,7 +159,12 @@ video {
 }
 
 .cf-box {
-  padding: 20px;
+  display: flex; /*Flex布局*/
+  display: -webkit-flex; /* Safari */
+  align-items: center; /*指定垂直居中*/
+
+  padding: 10px;
+  height: 100%;
   display: flex;
   justify-content: center;
 }
@@ -235,7 +251,6 @@ video {
   animation: none;
 }
 
-
 @-webkit-keyframes emoji-move-in {
   0% {
     margin-bottom: -200px;
@@ -296,33 +311,40 @@ video {
   }
 }
 
-
-.chat{
-    margin-top: 3.5px;
-    height: 40px;
-
-    display:flex;/*Flex布局*/
-    display: -webkit-flex; /* Safari */
-    align-items:center;/*指定垂直居中*/
-}
-.chat-content{
-}
-.chat-uid{
-}
-.system-message{
-    color:red
-}
-.inline-b{
-    display:inline-block
-}
-.chat-voice{
+.chat {
+  margin-top: 3.5px;
+  height: 40px;
+  display: flex; /*Flex布局*/
+  display: -webkit-flex; /* Safari */
+  align-items: center; /*指定垂直居中*/
 }
 
-.recorder-button{
+.chat-content {
+}
+
+.chat-uid {
+}
+
+.system-message {
+  color: red;
+}
+
+.inline-b {
+  display: inline-block;
+}
+
+.chat-voice {
+}
+
+.recorder-button {
   display: inline;
   position: fixed;
   bottom: 70px;
   right: 20px;
 }
 
-
+.voice-button {
+  width: 45px;
+  height: 45px;
+  margin-right: 10px;
+}

@@ -22,6 +22,9 @@ Page({
     second_height: 0, // 滚动框的高度
     isRecording: false, // 是否正在录音
 
+    isTapEnd: false, // 因为voice的录制是非阻塞的，所以可能会先touchend 后完成开始录制，从而导致一直在录制。用来fix这个问题
+
+
     // { "system": true, "content": "4123", "time": 24124, "id":0 },
     // { "uid": "anon", "content": "1", "contentType": 1, "time": 23123, "id":1  },
     // { "uid": "xiaoming", "content": "2", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 2  },
@@ -154,12 +157,20 @@ Page({
     let that = this
     let innerAudioContext = this.innerAudioContext
     this.recorderManager.onStart(() => {
-      that.setData({ isRecording: true })
+      console.log("onstartonstartonstartonstartonstartonstart")
       that.data.startRecordTime = Date.parse(new Date())
+      wx.showToast({
+        title:"录音中",
+        image:"/images/common/voiceToast.png"
+      })
       console.log(util.logMessage("开始录音"))
+      if (that.data.isTapEnd) {
+        that.recorderManager.stop()
+      }
     })
     this.recorderManager.onStop((res) => {
-      that.setData({ isRecording: false })
+      wx.hideToast()
+
       console.log(util.logMessage("结束录音"))
 
       let endRecordTime = Date.parse(new Date())
@@ -486,6 +497,8 @@ Page({
   },
 
   startRecord: function (e) {
+    this.data.isTapEnd = false;
+    console.log("startstartstartstartstartstart")
     // 先获得授权
     let that = this
     wx.authorize(
@@ -499,9 +512,7 @@ Page({
       }
     )
   },
-  endRecord: function (e) {
-    this.recorderManager.stop()
-  },
+
   tapDetailVoicePlay: function (e) {
     console.log("tapDetailVoicePlay")
     console.log("url=====" + e.currentTarget.dataset.url)
@@ -511,5 +522,13 @@ Page({
       console.log(res.errMsg)
       console.log(res.errCode)
     })
+  },
+  endRecord: function (e) {
+    this.data.isTapEnd = true;
+    console.log("endRecordendRecord")
+    this.recorderManager.stop()
+  },
+  voiceButtonTap: function (e) {
+    console.log("taptaptaptaptaptaptap")
   }
 })

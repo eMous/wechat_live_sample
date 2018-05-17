@@ -330,5 +330,6 @@ module.exports = {
   roomInfo: roomInfo,
   chatMessageSend: chatMessageSend,
   businessReconnect: businessReconnect,
-  sendVoice:sendVoice
+  sendVoice:sendVoice,
+  enterRoom: enterRoom
 }

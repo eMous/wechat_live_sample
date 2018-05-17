@@ -41,7 +41,10 @@
     <!-- isFullScreen 判断用来fix 全屏后还会出现评论输入框的bug -->
     <view class="comment-fixed" wx:if="{{!isFullScreen}}">
         <view class="cf-box">
-            <view class="emoji iconfont icon-emoji" catchtap="emojiShowHide" style='display:none'></view>
+            <!-- 原先程序内实现的emoji <view class="emoji iconfont icon-emoji" catchtap="emojiShowHide" style='display:none'></view> -->
+            <image class="voice-button" src='/images/common/voiceButton.png' mode="aspectFit" 
+            
+            bindtouchstart="startRecord" bindtouchcancel="endRecord" bindtouchend="endRecord" bindtap='voiceButtonTap'></image>
             <textarea  fixed="true" class="cf-content" bindfocus="textAreaFocus" maxlength="30" bindblur="textAreaBlur" auto-height value="{{content}}" placeholder="我要评论" cursor-spacing="50px"/>
             <text class="cf-send touch-active" bindtap="send">发送</text>
         </view>
@@ -60,7 +63,4 @@
 
     <import src="../../template/logmenu" />
     <template is="logmenu" />
-
-    <button class='recorder-button' loading="{{isRecording}}" 
-    bindtouchstart="startRecord" bindtouchcancel="endRecord" bindtouchend="endRecord">开始录音</button>
 </view>
