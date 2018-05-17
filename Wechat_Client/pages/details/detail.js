@@ -12,7 +12,7 @@ Page({
     _index: 0,
     livePlayersHeight: 240, //播放器的高
     barHeight: 40, // 控制条的高
-    isBarShow: true,// 控制条是否显示
+    isBarShow: false,// 控制条是否显示
     isPauseButtonShow: true, //是否显示的是暂停按钮
     isFullScreen: false, // 是否是全屏
     isShowLoadingGif: false, // 是否显示loading的动画（卡的时候要）
@@ -317,9 +317,20 @@ Page({
 
   // 点击直播区域
   tapLivePlayerArea: function () {
+    // 已经存在一个TimeOut
+    if(this.barUnShowTimeOut != undefined){
+      clearTimeout(this.barUnShowTimeOut)
+      this.barUnShowTimeOut = undefined
+    }
     this.setData({
       isBarShow: !this.data.isBarShow
     })
+    let that = this
+    this.barUnShowTimeOut = setTimeout(()=>{
+      that.setData({
+        isBarShow: false
+      })
+    }, 5000)
   },
   tapPauseButton: function () {
     if (this.data.isPauseButtonShow) {

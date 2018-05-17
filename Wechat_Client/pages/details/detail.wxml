@@ -48,7 +48,6 @@
             <textarea  fixed="true" class="cf-content" bindfocus="textAreaFocus" maxlength="30" bindblur="textAreaBlur" auto-height value="{{content}}" placeholder="我要评论" cursor-spacing="50px"/>
             <text class="cf-send touch-active" bindtap="send">发送</text>
         </view>
-
         <!--emoji表情盒子-->
         <view class="emoji-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}} {{isLoad ? 'no-emoji-move' : ''}}">
             <scroll-view scroll-y="true" bindscroll="emojiScroll" style="height:200px">
