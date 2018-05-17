@@ -222,17 +222,27 @@ function mooreChatDetail(chatId) {
 }
 // 发送聊天消息
 function chatMessageSend(contentStr, room) {
-  // { roomId:..,content:..,time:..,contentType..,voiceTime..}
+  // { roomId:..,content:..,time:..,contentType..,voiceTime..,avatarUrl}
+  let userInfo = wx.getStorageSync("userinfo")
+  let avatarUrl = false
+  if (userInfo)
+    avatarUrl = userInfo.avatarUrl
+
+
+  console.log("avatar =="+ avatarUrl);
   let retCommand = util.commandBuild(com.Command.C_Chat,
-    { content: contentStr, roomId: room, contentType: 1, time: (new Date()).valueOf() })
+    { content: contentStr, roomId: room, contentType: 1, avatarUrl: avatarUrl, time: (new Date()).valueOf() })
   send(retCommand)
 }
-
 function sendVoice(room,fileName, voiceDuration) {
-  // { roomId:..,content:..,time:..,contentType..,voiceTime..}
+  // { roomId:..,content:..,time:..,contentType..,voiceTime..avatarUrl}
   console.log("filename =="+ fileName)
+  let userInfo = wx.getStorageSync("userinfo")
+  let avatarUrl	 = false
+  if (userInfo)
+    avatarUrl = userInfo.avatarUrl	
   let retCommand = util.commandBuild(com.Command.C_Chat,
-    { content: fileName, roomId: room, contentType: 2, time: (new Date()).valueOf(), voiceTime: voiceDuration })
+    { content: fileName, roomId: room, contentType: 2, time: (new Date()).valueOf(), voiceTime: voiceDuration, avatarUrl: avatarUrl	 })
   send(retCommand)
 }
 // -------- 具体数据包处理函数 -------- 

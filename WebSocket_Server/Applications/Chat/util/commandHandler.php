@@ -318,7 +318,7 @@
 
 		echo("onClientChat!!! \n");
 		// 添加记录
-		$arr = ["uid"=>$uid, "content"=>$data["content"], "time"=>getMillisecond(), "contentType"=>$data["contentType"]];
+		$arr = ["uid"=>$uid, "content"=>$data["content"], "time"=>getMillisecond(), "contentType"=>$data["contentType"],"avatarUrl"=>$data["avatarUrl"]];
 		if($data["contentType"] == 2) {
             $arr["voiceTime"] = $data["voiceTime"];
             $prefix = "https://tetaa.brightcloud-tech.com/voices/";

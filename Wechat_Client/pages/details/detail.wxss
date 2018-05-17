@@ -355,6 +355,7 @@ video {
   display: flex;
   flex-direction: column;
   width: 70%;
+  margin-left: 10px;
 }
 .self-name-content-container{
   display: flex;
@@ -362,6 +363,8 @@ video {
   width: 70%;
   vertical-align: right;
   text-align:right;
+  margin-right: 10px;
+  
 }
 .left-arrow::before {
   position: absolute;

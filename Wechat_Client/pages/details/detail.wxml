@@ -27,7 +27,7 @@
         </view>
 
         <view class="others-chat" wx:if="{{c.uid != nickName}}">
-          <image src="/images/common/voiceButton.png" mode="aspectFit" class="other-avatar"></image>
+          <image src="{{c.avatarUrl ? c.avatarUrl : '/images/common/voiceButton.png'}}" mode="aspectFit" class="other-avatar"></image>
           <view class="other-name-content-container">
             <text class="uid">{{c.uid}}</text>
             <view>
@@ -37,7 +37,7 @@
           </view>
         </view>
         <view class="self-chat" wx:else>
-          <image src="/images/common/voiceButton.png" mode="aspectFit" class="other-avatar"></image>
+          <image src="{{c.avatarUrl ? c.avatarUrl : '/images/common/voiceButton.png'}}" mode="aspectFit" class="other-avatar"></image>
           <view class="self-name-content-container">
             <text class="uid">{{c.uid}}</text>
             <view>
