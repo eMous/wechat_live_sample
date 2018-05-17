@@ -28,7 +28,7 @@ Page({
     // { "system": true, "content": "4123", "time": 24124, "id":0 },
     // { "uid": "anon", "content": "1", "contentType": 1, "time": 23123, "id":1  },
     // { "uid": "xiaoming", "content": "2", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 2  },
-    chatDetail: [{ "uid": "xiaoming", "content": "2", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 2 },],
+    chatDetail: [{ "uid": "xiaoming", "content": "2", "contentType": 2, "time": 51242, "voiceTime": 2000, "id": 2 }, { "uid": "xiaoming", "content": "256465s", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 2 }, { "uid": "xiaoming", "content": "2asdasd64asd65a4sda4sd54sd5a4sd54asd4as5d4as5d4a6s4d6a5sd42asdasd64asd65a4sda4sd54sd5a4sd54asd4as5d4as5d4a6s4d6a5sd4", "contentType": 1, "time": 51242, "voiceTime": 2000, "id": 2 }],
     detail:
     {
       imgUrl: util.ossAliyuncs + "/images/bg0.jpg",
@@ -160,8 +160,8 @@ Page({
       console.log("onstartonstartonstartonstartonstartonstart")
       that.data.startRecordTime = Date.parse(new Date())
       wx.showToast({
-        title:"录音中",
-        image:"/images/common/voiceToast.png"
+        title: "录音中",
+        image: "/images/common/voiceToast.png"
       })
       console.log(util.logMessage("开始录音"))
       if (that.data.isTapEnd) {
@@ -309,16 +309,17 @@ Page({
       console.log("now content = " + content)
       let new_content = util.iGetInnerText(content)
       console.log("now content = " + new_content)
-
-      socketMatters.chatMessageSend(new_content, wx.getStorageSync("inRoom"));
-      that.setData({ content: "" })
+      if (new_content != "") {
+        socketMatters.chatMessageSend(new_content, wx.getStorageSync("inRoom"));
+        that.setData({ content: "" })
+      }
     }, 100)
   },
 
   // 点击直播区域
   tapLivePlayerArea: function () {
     // 已经存在一个TimeOut
-    if(this.barUnShowTimeOut != undefined){
+    if (this.barUnShowTimeOut != undefined) {
       clearTimeout(this.barUnShowTimeOut)
       this.barUnShowTimeOut = undefined
     }
@@ -326,7 +327,7 @@ Page({
       isBarShow: !this.data.isBarShow
     })
     let that = this
-    this.barUnShowTimeOut = setTimeout(()=>{
+    this.barUnShowTimeOut = setTimeout(() => {
       that.setData({
         isBarShow: false
       })

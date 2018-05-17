@@ -45,7 +45,7 @@ video {
   height: 100%;
   background: yellowgreen;
   flex-direction: row;
-  opacity:0.5;
+  opacity: 0.5;
 }
 
 .stopButton {
@@ -163,10 +163,8 @@ video {
   display: flex; /*Flex布局*/
   display: -webkit-flex; /* Safari */
   align-items: center; /*指定垂直居中*/
-
   padding: 10px;
   height: 100%;
-  display: flex;
   justify-content: center;
 }
 
@@ -314,13 +312,9 @@ video {
 
 .chat {
   margin-top: 3.5px;
-  height: 40px;
   display: flex; /*Flex布局*/
   display: -webkit-flex; /* Safari */
   align-items: center; /*指定垂直居中*/
-}
-
-.chat-content {
 }
 
 .chat-uid {
@@ -334,18 +328,97 @@ video {
   display: inline-block;
 }
 
-.chat-voice {
-}
-
-.recorder-button {
-  display: inline;
-  position: fixed;
-  bottom: 70px;
-  right: 20px;
-}
-
 .voice-button {
   width: 45px;
   height: 45px;
   margin-right: 10px;
+  border: 0;
+}
+
+.others-chat {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+.self-chat{
+  display: flex;
+  flex-direction: row-reverse;
+  width: 100%;
+}
+.other-avatar {
+  height: 45px;
+  width: 45px;
+}
+
+.other-name-content-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+}
+.self-name-content-container{
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  vertical-align: right;
+  text-align:right;
+}
+.left-arrow::before {
+  position: absolute;
+  content: '';
+  border: 5px solid transparent;
+  border-right: 5px solid burlywood;
+  
+  background: burlywood;
+  transform: rotate(45deg) translateY(-50%);
+  top: 25rpx;
+  left:-16rpx;
+}
+ .right-arrow::before {
+  position: absolute;
+  content: '';
+  border: 5px solid transparent;
+  border-right: 5px solid burlywood;
+  
+  background: burlywood;
+  transform: rotate(45deg) translateY(-50%);
+  top: 25rpx;
+  right:-2rpx;
+} 
+.left-arrow, .right-arrow{
+  overflow: visible;
+  position: relative;
+}
+.chat-voice {
+  background-color: burlywood;
+}
+.chat-content {
+  display:inline-block;
+  background: #98e165;
+   overflow: visible;
+  position: relative;
+  padding: 15rpx;
+  -webkit-border-radius: 10rpx;
+  font-size: 32rpx;
+  color: #000;
+  line-height: 60rpx;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 50;
+  text-overflow: ellipsis; 
+}
+.chat-content-right{
+  text-align: left
+}
+.chat-content::before{
+  background: #98e165;
+  border-right: 5px solid #98e165;
+  top:rpx;
+}
+.uid {
+  color: grey;
+}
+
+.me-uid {
+  color: blue;
 }
