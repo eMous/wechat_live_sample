@@ -2,3 +2,5 @@
 <view class='container'>
     <view class="notice">直播间不存在或已被关闭</view>
 </view>
+  <import src="../../template/logmenu" />
+  <template is="logmenu" />

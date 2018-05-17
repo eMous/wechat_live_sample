@@ -178,8 +178,10 @@
 		// 房间不存在
 		if(!array_key_exists($roomId, $roomInfo)){
 			$failCode = 1;
+			echo($roomId . "is not exist onDetailRoomInfo\n");
 		}else if(!$roomInfo[$roomId]["isLive"]){
-			// 直播间关闭
+            echo($roomId . "is not not living onDetailRoomInfo\n");
+            // 直播间关闭
 			$failCode = 2;
 		}
 
@@ -247,10 +249,12 @@
 		// 先退其他的房间
 		onLeaveRoom($client_id);
 
+		var_dump($globalData->roomInfo);
 		// 房间不存在
 		if(!array_key_exists($roomId, $globalData->roomInfo)){
 			$ret = ["success"=>-1,"roomId"=>$roomId];
 			$commandSend = commandBuild(Commands::S_Enter_Room_Response, $ret);
+            echo($roomId . "is not exist onEnterRoom\n");
 			Gateway::sendToCurrentClient($commandSend);
 			return;
 		}

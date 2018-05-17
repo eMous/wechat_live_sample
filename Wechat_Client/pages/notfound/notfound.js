@@ -62,5 +62,8 @@ Page({
    */
   onShareAppMessage: function () {
   
-  }
+  },
+  tapLog: function () {
+    wx.navigateTo({ url: '../logs/logs' });
+  },
 })
